@@ -1,0 +1,3 @@
+# Capistrano Resque
+
+todo
