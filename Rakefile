@@ -1,2 +1,2 @@
-require 'bundler'
-require 'bundler/gem_tasks'
+require "bundler"
+require "bundler/gem_tasks"

@@ -1,0 +1,29 @@
+PATH
+  remote: .
+  specs:
+    capistrano-resque (0.0.1)
+      capistrano
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    capistrano (2.11.2)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
+    highline (1.6.11)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.3.0)
+    net-ssh-gateway (1.1.0)
+      net-ssh (>= 1.99.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  capistrano-resque!
