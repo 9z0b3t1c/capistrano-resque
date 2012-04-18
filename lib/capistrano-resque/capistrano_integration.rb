@@ -6,12 +6,13 @@ module CapistranoResque
     def self.load_into(capistrano_config)
       capistrano_config.load do
 
-        _cset(:num_of_queues, 2)
+        _cset(:num_of_queues, 1)
         _cset(:queue_name, "*")
-        _cset(:app_env, (fetch(:rails_env) rescue 'production'))
-
+        _cset(:app_env, (fetch(:rails_env) rescue "production"))
+        _cset(:verbosity, 1)
+        
         def remote_file_exists?(full_path)
-          'true' ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
+          "true" ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
         end
 
         def remote_process_exists?(pid_file)
@@ -19,10 +20,15 @@ module CapistranoResque
         end
 
         namespace :resque do
-          desc "Restart running workers"
-          task :restart_workers do
-            Rake::Task['resque:stop_workers'].invoke
-            Rake::Task['resque:start_workers'].invoke
+          desc "Start Resque workers"
+          task :start_workers do
+            puts "Starting #{num_of_queues} worker(s) with QUEUE: #{queue_name}"
+            num_of_queues.times do |i|
+              pid = "./tmp/pids/resque_worker_#{i}.pid"
+              run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=#{queue_name} \
+PIDFILE=#{pid} BACKGROUND=yes VVERBOSE=#{verbosity}  \
+bundle exec rake environment resque:work > log/resque_worker_#{i}.log"
+            end
           end
 
           desc "Quit running Resque workers"
@@ -40,17 +46,6 @@ module CapistranoResque
               else
                 logger.important("No PIDs found. Check if Resque is running.", "Resque")
               end
-            end
-          end
-
-          desc "Start Resque workers"
-          task :start_workers do
-            puts "Starting #{num_of_queues} worker(s) with QUEUE: #{queue_name}"
-            num_of_queues.times do |i|
-              pid = "./tmp/pids/resque_worker_#{i}.pid"
-              run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=#{queue_name} \
-PIDFILE=#{pid} BACKGROUND=yes VVERBOSE=1 LOGFILE=./resque.log \
-bundle exec rake environment resque:work"
             end
           end
         end
