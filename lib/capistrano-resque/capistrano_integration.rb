@@ -26,8 +26,8 @@ module CapistranoResque
             num_of_queues.times do |i|
               pid = "./tmp/pids/resque_worker_#{i}.pid"
               run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=#{queue_name} \
-PIDFILE=#{pid} BACKGROUND=yes VVERBOSE=#{verbosity}  \
-bundle exec rake environment resque:work > log/resque_worker_#{i}.log"
+PIDFILE=#{pid} BACKGROUND=yes LOGFILE=./resque-worker#{i}.log VVERBOSE=#{verbosity}  \
+bundle exec rake environment resque:work"
             end
           end
 
