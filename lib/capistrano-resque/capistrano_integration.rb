@@ -10,7 +10,7 @@ module CapistranoResque
         _cset(:queue_name, "*")
         _cset(:app_env, (fetch(:rails_env) rescue "production"))
         _cset(:verbosity, 1)
-        
+
         def remote_file_exists?(full_path)
           "true" ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
         end
