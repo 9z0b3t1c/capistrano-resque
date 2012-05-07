@@ -1,5 +1,7 @@
 # Capistrano Resque
 
+Basic tasks for putting some Resque in your Cap.
+
 ### In your Capfile:
 
 ```
