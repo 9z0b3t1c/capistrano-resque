@@ -33,8 +33,7 @@ bundle exec rake environment resque:work"
 
           desc "Quit running Resque workers"
           task :stop_workers do
-            num_of_queues.times do |i|
-              pid = "#{current_path}/tmp/pids/resque_worker_#{i}.pid"
+            Dir.entries("#{current_path}/tmp/pids/").select { |v| v =~ /resque_worker_[0-9]+.pid/ }.each_with_index do |pid, i|
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
                   logger.important("Stopping...", "Resque Worker #{i}")
