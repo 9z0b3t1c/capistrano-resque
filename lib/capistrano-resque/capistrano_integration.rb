@@ -19,6 +19,10 @@ module CapistranoResque
           capture("ps -p $(cat #{pid_file}) ; true").strip.split("\n").size == 2
         end
 
+        def current_pids
+          capture("ls #{current_path}/tmp/pids/resque_work*.pid").strip.split("\r\n")
+        end
+
         namespace :resque do
           desc "Start Resque workers"
           task :start_workers do
@@ -33,14 +37,14 @@ bundle exec rake environment resque:work"
 
           desc "Quit running Resque workers"
           task :stop_workers do
-            Dir.entries("#{current_path}/tmp/pids/").select { |v| v =~ /resque_worker_[0-9]+.pid/ }.each_with_index do |pid, i|
+            current_pids.each do |pid|
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
-                  logger.important("Stopping...", "Resque Worker #{i}")
+                  logger.important("Stopping...", "Resque Worker: #{pid}")
                   run "#{try_sudo} kill `cat #{pid}`"
                 else
                   run "rm #{pid}"
-                  logger.important("Resque Worker #{i} is not running.", "Resque")
+                  logger.important("Resque Worker #{pid} is not running.", "Resque")
                 end
               else
                 logger.important("No PIDs found. Check if Resque is running.", "Resque")
