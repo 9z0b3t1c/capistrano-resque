@@ -25,7 +25,7 @@ module CapistranoResque
 
         namespace :resque do
           desc "Start Resque workers"
-          task :start_workers do
+          task :start do
             puts "Starting #{num_of_queues} worker(s) with QUEUE: #{queue_name}"
             num_of_queues.times do |i|
               pid = "./tmp/pids/resque_worker_#{i}.pid"
@@ -36,7 +36,7 @@ bundle exec rake environment resque:work"
           end
 
           desc "Quit running Resque workers"
-          task :stop_workers do
+          task :stop do
             current_pids.each do |pid|
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
@@ -50,6 +50,12 @@ bundle exec rake environment resque:work"
                 logger.important("No PIDs found. Check if Resque is running.", "Resque")
               end
             end
+          end
+
+          desc "Restart running Resque workers"
+          task :restart do
+            stop
+            start
           end
         end
       end
