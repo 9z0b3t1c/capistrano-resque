@@ -11,11 +11,25 @@ require "capistrano-resque"
 ### In your deploy.rb:
 
 ```
-set :queue_name, "my_queue_name"
-set :num_of_queues, 2
+set :workers, { "my_queue_name" => 2 }
 ```
 
-Then, running cap -vT | grep resque should give you...
+You can also specify multiple queues and the number of workers
+for each queue:
+
+```
+set :workers, { "archive" => 1, "mailing" => 3, "search_index, cache_warming" => 1 }
+```
+
+The above will start five workers in total:
+
+ * one listening on the `archive` queue
+ * one listening on the `search_index, cache_warming` queue
+ * three listening on the `mailing` queue
+
+### The tasks
+
+Running cap -vT | grep resque should give you...
 
 ```
 ➔ cap -vT | grep resque
