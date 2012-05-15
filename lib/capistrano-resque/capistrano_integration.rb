@@ -24,6 +24,19 @@ module CapistranoResque
         end
 
         namespace :resque do
+          desc "See current worker status"
+          task :status do
+            current_pids.each do |pid|
+              if remote_file_exists?(pid)
+                if remote_process_exists?(pid)
+                  logger.important("Up and running", "Resque Worker: #{pid}")
+                else
+                  logger.important("Down", "Resque Worker: #{pid}")
+                end
+              end
+            end
+          end
+
           desc "Start Resque workers"
           task :start_workers do
             puts "Starting #{num_of_queues} worker(s) with QUEUE: #{queue_name}"
