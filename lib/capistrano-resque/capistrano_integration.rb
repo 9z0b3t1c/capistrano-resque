@@ -20,7 +20,7 @@ module CapistranoResque
         end
 
         def current_pids
-          capture("ls #{current_path}/tmp/pids/resque_work*.pid").strip.split(/\r{0,1}\n/)
+          capture("ls #{current_path}/tmp/pids/resque_work*.pid 2>/dev/null || true").strip.split(/\r{0,1}\n/)
         end
 
         namespace :resque do
