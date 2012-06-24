@@ -46,3 +46,7 @@ add the following line to your `deploy.rb`:
 ```
 after "deploy:restart", "resque:restart"
 ```
+
+## Logging
+
+Currently, resque doesn't log to a logfile. I'm using the 'logfile' branch of http://github.com/sj26/resque in my consuming Gemfile to achieve this functionality. Hopefully that will get merged into defunkt/resque soon.
