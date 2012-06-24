@@ -6,8 +6,7 @@ module CapistranoResque
     def self.load_into(capistrano_config)
       capistrano_config.load do
 
-        _cset(:num_of_queues, 1)
-        _cset(:queue_name, "*")
+        _cset(:workers, {"*" => 1})
         _cset(:app_env, (fetch(:rails_env) rescue "production"))
         _cset(:verbosity, 1)
 
@@ -39,12 +38,16 @@ module CapistranoResque
 
           desc "Start Resque workers"
           task :start do
-            puts "Starting #{num_of_queues} worker(s) with QUEUE: #{queue_name}"
-            num_of_queues.times do |i|
-              pid = "./tmp/pids/resque_worker_#{i}.pid"
-              run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=#{queue_name} \
-PIDFILE=#{pid} BACKGROUND=yes LOGFILE=./log/resque-worker#{i}.log VVERBOSE=#{verbosity}  \
-bundle exec rake environment resque:work"
+            worker_id = 1
+            workers.each_pair do |queue, number_of_workers|
+              puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
+              number_of_workers.times do
+                pid = "./tmp/pids/resque_worker_#{worker_id}.pid"
+                run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=\"#{queue}\" \
+  PIDFILE=#{pid} BACKGROUND=yes LOGFILE=./log/resque-worker#{worker_id}.log VVERBOSE=#{verbosity}  \
+  bundle exec rake environment resque:work"
+                worker_id += 1
+              end
             end
           end
 
