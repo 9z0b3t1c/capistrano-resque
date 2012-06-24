@@ -33,13 +33,12 @@ Running cap -vT | grep resque should give you...
 
 ```
 ➔ cap -vT | grep resque
-<<<<<<< HEAD
 cap resque:start     # Start Resque workers
 cap resque:stop      # Quit running Resque workers
 cap resque:restart   # Restart running Resque workers
 ```
 
-### Restart on deployer
+### Restart on deployment
 
 To restart you workers automatically when `cap deploy:restart` is executed
 add the following line to your `deploy.rb`:
@@ -47,9 +46,3 @@ add the following line to your `deploy.rb`:
 ```
 after "deploy:restart", "resque:restart"
 ```
-
-=======
-cap resque:start_workers     # Start Resque workers
-cap resque:stop_workers      # Quit running Resque workers
-```
->>>>>>> e66f2acf3c9209d95f6deaebf5b850be094a26c1
