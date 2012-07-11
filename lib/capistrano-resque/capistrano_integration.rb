@@ -85,9 +85,9 @@ module CapistranoResque
             desc "Stops resque scheduler"
             task :stop, :roles => :resque_scheduler do
               pid = "#{current_path}/tmp/pids/scheduler.pid"
-              if remote_file_exist?(pid)
+              if remote_file_exists?(pid)
                 logger.important("Shutting down resque scheduler...", "Resque Scheduler")
-                run remote_process_exist?(pid) ? "#{try_sudo} kill `#{pid}`" : "rm #{pid}"
+                run remote_process_exists?(pid) ? "#{try_sudo} kill `#{pid}`" : "rm #{pid}"
               else
                 logger.important("Resque scheduler not running", "Resque Scheduler")
               end
