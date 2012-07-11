@@ -24,7 +24,7 @@ module CapistranoResque
 
         namespace :resque do
           desc "See current worker status"
-          task :status do
+          task :status, :roles => :resque_worker do
             current_pids.each do |pid|
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
@@ -37,7 +37,7 @@ module CapistranoResque
           end
 
           desc "Start Resque workers"
-          task :start do
+          task :start, :roles => :resque_worker do
             worker_id = 1
             workers.each_pair do |queue, number_of_workers|
               puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
@@ -52,7 +52,7 @@ module CapistranoResque
           end
 
           desc "Quit running Resque workers"
-          task :stop do
+          task :stop, :roles => :resque_worker do
             current_pids.each do |pid|
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
@@ -69,9 +69,53 @@ module CapistranoResque
           end
 
           desc "Restart running Resque workers"
-          task :restart do
+          task :restart, :roles => :resque_worker do
             stop
             start
+          end
+
+          namespace :scheduler do
+            desc "Starts resque scheduler with default configs"
+            task :start, :roles => :resque_scheduler do
+              run "cd #{current_path} && PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes \
+  RAILS_ENV=#{rails_env} VVERBOSE=#{verbosity} \
+  bundle exec rake resque:scheduler 2>&1 >> #{current_path}/log/resque_scheduler.log &"
+            end
+
+            desc "Stops resque scheduler"
+            task :stop, :roles => :resque_scheduler do
+              pid = "#{current_path}/tmp/pids/scheduler.pid"
+              if remote_file_exist?(pid)
+                logger.important("Shutting down resque scheduler...", "Resque Scheduler")
+                run remote_process_exist?(pid) ? "#{try_sudo} kill `#{pid}`" : "rm #{pid}"
+              else
+                logger.important("Resque scheduler not running", "Resque Scheduler")
+              end
+            end
+
+            task :restart do
+              stop
+              start
+            end
+          end
+
+          namespace :web do
+            desc "Starts resque web inerface"
+            task :start, :roles => :resque_web do
+              #TODO, make resque web namespaceable
+              run "cd #{current_path} && bundle exec resque-web"
+            end
+
+            desc "Stop resque web inerface"
+            task :stop, :roles => :resque_web do
+              run "cd #{current_path} && bundle exec resque-web --kill"
+            end
+
+            desc "Restarts resque web inerface"
+            task :restart, :roles => :resque_web do
+              stop
+              start
+            end
           end
         end
       end
