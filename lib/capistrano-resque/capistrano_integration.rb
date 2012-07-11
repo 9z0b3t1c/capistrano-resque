@@ -87,7 +87,7 @@ module CapistranoResque
               pid = "#{current_path}/tmp/pids/scheduler.pid"
               if remote_file_exists?(pid)
                 logger.important("Shutting down resque scheduler...", "Resque Scheduler")
-                run remote_process_exists?(pid) ? "#{try_sudo} kill `#{pid}`" : "rm #{pid}"
+                run remote_process_exists?(pid) ? "#{try_sudo} kill `cat #{pid}`" : "rm #{pid}"
               else
                 logger.important("Resque scheduler not running", "Resque Scheduler")
               end
