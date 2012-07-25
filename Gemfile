@@ -1,3 +1,5 @@
 source "http://rubygems.org"
-gem 'resque', :git => 'git@github.com:sj26/resque.git', :branch => 'logfile'
+
+gem 'resque', '~> 1.21.0'
+
 gemspec
