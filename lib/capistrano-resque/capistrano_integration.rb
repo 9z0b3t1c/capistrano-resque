@@ -8,7 +8,6 @@ module CapistranoResque
 
         _cset(:workers, {"*" => 1})
         _cset(:app_env, (fetch(:rails_env) rescue "production"))
-        _cset(:verbosity, 1)
 
         def remote_file_exists?(full_path)
           "true" ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
@@ -44,7 +43,7 @@ module CapistranoResque
               number_of_workers.times do
                 pid = "./tmp/pids/resque_worker_#{worker_id}.pid"
                 run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=\"#{queue}\" \
-  PIDFILE=#{pid} BACKGROUND=yes LOGFILE=./log/resque-worker#{worker_id}.log VVERBOSE=#{verbosity}  \
+  PIDFILE=#{pid} BACKGROUND=yes LOGFILE=./log/resque-worker#{worker_id}.log VERBOSE=1  \
   bundle exec rake environment resque:work"
                 worker_id += 1
               end
@@ -78,7 +77,7 @@ module CapistranoResque
             desc "Starts resque scheduler with default configs"
             task :start, :roles => :resque_scheduler do
               run "cd #{current_path} && PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes \
-  RAILS_ENV=#{rails_env} VVERBOSE=#{verbosity} \
+  RAILS_ENV=#{rails_env} VERBOSE=1 \
   bundle exec rake resque:scheduler 2>&1 >> #{current_path}/log/resque_scheduler.log &"
             end
 
