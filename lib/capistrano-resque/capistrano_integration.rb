@@ -95,25 +95,6 @@ PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes bundle exec rake resque:schedule
               start
             end
           end
-
-          namespace :web do
-            desc "Starts resque web inerface"
-            task :start, :roles => :resque_web do
-              #TODO, make resque web namespaceable
-              run "cd #{current_path} && bundle exec resque-web"
-            end
-
-            desc "Stop resque web inerface"
-            task :stop, :roles => :resque_web do
-              run "cd #{current_path} && bundle exec resque-web --kill"
-            end
-
-            desc "Restarts resque web inerface"
-            task :restart, :roles => :resque_web do
-              stop
-              start
-            end
-          end
         end
       end
     end
