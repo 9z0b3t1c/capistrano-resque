@@ -36,6 +36,9 @@ Running cap -vT | grep resque should give you...
 cap resque:start     # Start Resque workers
 cap resque:stop      # Quit running Resque workers
 cap resque:restart   # Restart running Resque workers
+cap resque:scheduler:restart # 
+cap resque:scheduler:start   # Starts resque scheduler with default configs
+cap resque:scheduler:stop    # Stops resque scheduler
 ```
 
 ### Restart on deployment
@@ -46,7 +49,3 @@ add the following line to your `deploy.rb`:
 ```
 after "deploy:restart", "resque:restart"
 ```
-
-## Logging
-
-Currently, resque doesn't log to a logfile. I'm using the 'logfile' branch of http://github.com/sj26/resque in my consuming Gemfile to achieve this functionality. Hopefully that will get merged into defunkt/resque soon.
