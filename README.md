@@ -49,3 +49,8 @@ add the following line to your `deploy.rb`:
 ```
 after "deploy:restart", "resque:restart"
 ```
+### Logging
+
+I've decided to lose the logging ability altogether, in order to keep up with recent versions of Resque, following the chatter on: https://github.com/defunkt/resque/pull/450
+
+If logging is important to you, there's still the 0.0.4 release of this project.

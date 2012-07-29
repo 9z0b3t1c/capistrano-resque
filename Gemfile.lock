@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    capistrano-resque (0.0.4)
+    capistrano-resque (0.0.5)
       capistrano
 
 GEM
