@@ -55,7 +55,7 @@ PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 bundle exec rake environment resque:work
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
                   logger.important("Stopping...", "Resque Worker: #{pid}")
-                  run "#{try_sudo} kill `cat #{pid}`"
+                  run "#{try_sudo} kill -9 `cat #{pid}`"
                 else
                   run "rm #{pid}"
                   logger.important("Resque Worker #{pid} is not running.", "Resque")
