@@ -7,7 +7,6 @@ module CapistranoResque
       capistrano_config.load do
 
         _cset(:workers, {"*" => 1})
-        _cset(:app_env, (fetch(:rails_env) rescue "production"))
 
         def remote_file_exists?(full_path)
           "true" ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
@@ -38,6 +37,7 @@ module CapistranoResque
           desc "Start Resque workers"
           task :start, :roles => :resque_worker do
             worker_id = 1
+            app_env = fetch(:rails_env, "production")
             workers.each_pair do |queue, number_of_workers|
               puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
               number_of_workers.times do
