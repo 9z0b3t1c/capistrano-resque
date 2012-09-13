@@ -20,6 +20,22 @@ module CapistranoResque
         def current_pids
           capture("ls #{current_path}/tmp/pids/resque_work*.pid 2>/dev/null || true").strip.split(/\r{0,1}\n/)
         end
+        
+        def workers_roles
+          return workers.keys if workers.first[1].is_a? Hash
+          [:resque_worker]
+        end
+
+        def for_each_workers(&block)
+          if workers.first[1].is_a? Hash
+            workers_roles.each do |role|
+              yield(role.to_sym, workers[role.to_sym])
+            end
+          else
+            yield(:resque_worker,workers)  
+          end
+        end
+        
 
         namespace :resque do
           desc "See current worker status"
@@ -36,21 +52,24 @@ module CapistranoResque
           end
 
           desc "Start Resque workers"
-          task :start, :roles => :resque_worker do
+          task :start, :roles => workers_roles do
             worker_id = 1
-            workers.each_pair do |queue, number_of_workers|
-              puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
-              number_of_workers.times do
-                pid = "./tmp/pids/resque_worker_#{worker_id}.pid"
-                run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=\"#{queue}\" \
-PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 bundle exec rake environment resque:work"
-                worker_id += 1
+            for_each_workers do |role, workers|
+              workers.each_pair do |queue, number_of_workers|
+                puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
+                number_of_workers.times do
+                  pid = "./tmp/pids/resque_worker_#{worker_id}.pid"
+                  run("cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=\"#{queue}\" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 bundle exec rake environment resque:work", 
+                      :roles => role)
+                  worker_id += 1
+                end
               end
             end
+
           end
 
           desc "Quit running Resque workers"
-          task :stop, :roles => :resque_worker do
+          task :stop, :roles => workers_roles do
             current_pids.each do |pid|
               if remote_file_exists?(pid)
                 if remote_process_exists?(pid)
