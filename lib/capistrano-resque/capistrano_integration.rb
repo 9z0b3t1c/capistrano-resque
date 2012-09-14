@@ -7,7 +7,7 @@ module CapistranoResque
       capistrano_config.load do
 
         _cset(:workers, {"*" => 1})
-        _cset(:app_env, (fetch(:rails_env) rescue "production"))
+        _cset(:verbosity, 1)
 
         def remote_file_exists?(full_path)
           "true" ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
@@ -42,7 +42,7 @@ module CapistranoResque
               puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
               number_of_workers.times do
                 pid = "./tmp/pids/resque_worker_#{worker_id}.pid"
-                run "cd #{current_path} && RAILS_ENV=#{app_env} QUEUE=\"#{queue}\" \
+                run "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
 PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 bundle exec rake environment resque:work"
                 worker_id += 1
               end
