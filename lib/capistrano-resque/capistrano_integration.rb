@@ -75,7 +75,7 @@ PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes bundle exec rake resque:schedule
             task :stop, :roles => :resque_scheduler do
               pid = "#{current_path}/tmp/pids/scheduler.pid"
               command = "if [ -e #{pid} ]; then \
-                #{try_sudo} kill $(cat #{pid}) ; rm #{pid} ; \
+                #{try_sudo} kill $(cat #{pid}) ; rm #{pid} \
                 ;fi"
               run(command)
               
