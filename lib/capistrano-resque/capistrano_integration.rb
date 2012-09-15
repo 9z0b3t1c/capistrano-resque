@@ -19,10 +19,9 @@ module CapistranoResque
               yield(role.to_sym, workers[role.to_sym])
             end
           else
-            yield(:resque_worker,workers)  
+            yield(:resque_worker,workers)
           end
         end
-        
 
         namespace :resque do
           desc "See current worker status"
