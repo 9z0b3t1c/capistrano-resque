@@ -1,3 +1,7 @@
+# Changes
+
+Using SIGQUIT to kill processes as they aren't terminating properly.
+
 # Capistrano Resque
 
 Basic tasks for putting some Resque in your Cap.

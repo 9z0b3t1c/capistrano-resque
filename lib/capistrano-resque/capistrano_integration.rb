@@ -49,10 +49,16 @@ module CapistranoResque
             end
           end
 
+          # See https://github.com/defunkt/resque#signals for a descriptions of signals
+          # QUIT - Wait for child to finish processing then exit (graceful)
+          # TERM / INT - Immediately kill child then exit (stale or stuck)
+          # USR1 - Immediately kill child but don't exit (stale or stuck)
+          # USR2 - Don't start to process any new jobs (pause)
+          # CONT - Start to process new jobs again after a USR2 (resume)
           desc "Quit running Resque workers"
           task :stop, :roles => lambda { workers_roles() }, :on_no_matching_servers => :continue do
             command = "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-              for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; do #{try_sudo} kill `cat $f` ; rm $f ;done \
+              for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; do #{try_sudo} kill -s USR1 `cat $f` ; rm $f ;done \
               ;fi"
             run(command)
           end
