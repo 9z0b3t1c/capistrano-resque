@@ -11,6 +11,9 @@ require "capistrano-resque"
 ### In your deploy.rb:
 
 ```
+role :resque_worker, "app_domain"
+role :resque_scheduler, "app_domain"
+
 set :workers, { "my_queue_name" => 2 }
 ```
 
@@ -33,6 +36,7 @@ Running cap -vT | grep resque should give you...
 
 ```
 ➔ cap -vT | grep resque
+cao resque:status    # Check worksers status
 cap resque:start     # Start Resque workers
 cap resque:stop      # Quit running Resque workers
 cap resque:restart   # Restart running Resque workers
