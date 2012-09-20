@@ -7,6 +7,7 @@ module CapistranoResque
       capistrano_config.load do
 
         _cset(:workers, {"*" => 1})
+        _cset(:resque_kill_signal, "QUIT")
 
         def workers_roles
           return workers.keys if workers.first[1].is_a? Hash
@@ -58,7 +59,7 @@ module CapistranoResque
           desc "Quit running Resque workers"
           task :stop, :roles => lambda { workers_roles() }, :on_no_matching_servers => :continue do
             command = "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-              for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; do #{try_sudo} kill -s USR1 `cat $f` ; rm $f ;done \
+              for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; do #{try_sudo} kill -s #{resque_kill_signal} `cat $f` ; rm $f ;done \
               ;fi"
             run(command)
           end
