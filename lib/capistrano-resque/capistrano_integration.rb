@@ -8,6 +8,7 @@ module CapistranoResque
 
         _cset(:workers, {"*" => 1})
         _cset(:resque_kill_signal, "QUIT")
+        _cset(:relative_url_root, nil)
 
         def workers_roles
           return workers.keys if workers.first[1].is_a? Hash
@@ -41,9 +42,10 @@ module CapistranoResque
                 puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
                 number_of_workers.times do
                   pid = "./tmp/pids/resque_work_#{worker_id}.pid"
-                  run("cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
-                   PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 #{fetch(:bundle_cmd, "bundle")} exec rake environment resque:work >> #{shared_path}/log/resque.log 2>&1 &", 
-                      :roles => role)
+                  command = "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1"
+                  command << " RAILS_RELATIVE_URL_ROOT=#{relative_url_root}" unless (relative_url_root.nil? or relative_url_root.empty?)
+                  command << " #{fetch(:bundle_cmd, "bundle")} exec rake environment resque:work >> #{shared_path}/log/resque.log 2>&1 &"
+                  run(command, :roles => role)
                   worker_id += 1
                 end
               end
@@ -69,7 +71,7 @@ module CapistranoResque
             stop
             start
           end
-          
+
           namespace :scheduler do
             desc "Starts resque scheduler with default configs"
             task :start, :roles => :resque_scheduler do
@@ -84,7 +86,7 @@ PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes bundle exec rake resque:schedule
                 #{try_sudo} kill $(cat #{pid}) ; rm #{pid} \
                 ;fi"
               run(command)
-              
+
             end
 
             task :restart do
