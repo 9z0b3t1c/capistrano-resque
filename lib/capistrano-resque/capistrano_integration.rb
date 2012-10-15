@@ -41,7 +41,7 @@ module CapistranoResque
                 number_of_workers.times do
                   pid = "./tmp/pids/resque_work_#{worker_id}.pid"
                   run("cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
-                   PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 #{fetch(:bundle_cmd, "bundle")} exec rake environment resque:work >> #{shared_path}/log/resque.log 2>&1 &", 
+                   PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 #{fetch(:bundle_cmd, "bundle")} exec rake environment resque:work >> #{shared_path}/log/resque.log 2>&1", 
                       :roles => role)
                   worker_id += 1
                 end
@@ -67,7 +67,7 @@ module CapistranoResque
             desc "Starts resque scheduler with default configs"
             task :start, :roles => :resque_scheduler do
               run "cd #{current_path} && RAILS_ENV=#{rails_env} \
-PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes bundle exec rake resque:scheduler >> #{shared_path}/log/resque_scheduler.log 2>&1 &"
+PIDFILE=./tmp/pids/scheduler.pid BACKGROUND=yes bundle exec rake resque:scheduler >> #{shared_path}/log/resque_scheduler.log 2>&1"
             end
 
             desc "Stops resque scheduler"
