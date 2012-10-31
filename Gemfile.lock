@@ -14,6 +14,8 @@ PATH
   specs:
     capistrano-resque (0.0.7)
       capistrano
+      resque
+      resque-scheduler
 
 GEM
   remote: http://rubygems.org/
