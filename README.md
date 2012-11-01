@@ -1,7 +1,3 @@
-# Changes
-
-Using SIGQUIT to kill processes as they aren't terminating properly.
-
 # Capistrano Resque
 
 Basic tasks for putting some Resque in your Cap.
@@ -40,13 +36,13 @@ Running cap -vT | grep resque should give you...
 
 ```
 ➔ cap -vT | grep resque
-cap resque:status    # Check worksers status
+cap resque:status    # Check workers status
 cap resque:start     # Start Resque workers
 cap resque:stop      # Quit running Resque workers
 cap resque:restart   # Restart running Resque workers
 cap resque:scheduler:restart # 
-cap resque:scheduler:start   # Starts resque scheduler with default configs
-cap resque:scheduler:stop    # Stops resque scheduler
+cap resque:scheduler:start   # Starts Resque Scheduler with default configs
+cap resque:scheduler:stop    # Stops Resque Scheduler
 ```
 
 ### Restart on deployment
