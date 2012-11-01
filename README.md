@@ -59,9 +59,23 @@ after "deploy:restart", "resque:restart"
 ```
 ### Logging
 
-I've decided to lose the logging ability altogether, in order to keep up with recent versions of Resque, following the chatter on: https://github.com/defunkt/resque/pull/450
+Backgrounding and logging are current sticking points. I'm using the HEAD of resque's 1-x-stable branch for the 0.0.8 release because it has some new logging functions not yet slated for a resque release.
 
-If logging is important to you, there's still the 0.0.4 release of this project.
+In your Gemfile, you will need to specify:
+
+```
+gem 'resque', :git => 'git://github.com/defunkt/resque.git', :branch => '1-x-stable'
+```
+
+Also, you will need to include:
+
+```
+Resque.logger = Logger.new("new_resque_log_file")
+```
+
+...somewhere sensible, such as in your resque.rake, to achieve logging.
+
+The chatter on: https://github.com/defunkt/resque/pull/450 gives more information. If using HEAD of this resque branch doesn't work for you, then pin to v0.0.7 of this project.
 
 ### License
 
