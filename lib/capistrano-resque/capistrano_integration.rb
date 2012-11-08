@@ -68,7 +68,7 @@ module CapistranoResque
             for_each_workers do |role, workers|
               worker_id = 1
               workers.each_pair do |queue, number_of_workers|
-                puts "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
+                logger.info "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
                 number_of_workers.times do
                   pid = "./tmp/pids/resque_work_#{worker_id}.pid"
                   run(start_command(queue, pid), :roles => role)
