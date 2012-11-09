@@ -69,11 +69,13 @@ module CapistranoResque
               worker_id = 1
               workers.each_pair do |queue, number_of_workers|
                 logger.info "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
+                threads = []
                 number_of_workers.times do
                   pid = "./tmp/pids/resque_work_#{worker_id}.pid"
-                  run(start_command(queue, pid), :roles => role)
+                  threads << Thread.new { run(start_command(queue, pid), :roles => role) }
                   worker_id += 1
                 end
+                threads.each(&:join)
               end
             end
           end
