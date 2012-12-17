@@ -71,17 +71,16 @@ Resque.logger = Logger.new("new_resque_log_file")
 
 ...somewhere sensible, such as in your resque.rake, to achieve logging.
 
+The chatter on: https://github.com/defunkt/resque/pull/450 gives more information. If using HEAD of this resque branch doesn't work for you, then pin to v0.0.7 of this project.
+
 # Limitations
 
-Because starting workers is done concurently via capistrano, you will be limited in number of workers by ssh limit
-of connections on your server (default limit is 10)
+Starting workers is done concurently via capistrano and you are limited ssh connections limit on your server (default limit is 10)
 
 in order to use more workers please change your sshd configurtion (/etc/ssh/sshd_config)
 
     MaxStartups 100
 
-
-The chatter on: https://github.com/defunkt/resque/pull/450 gives more information. If using HEAD of this resque branch doesn't work for you, then pin to v0.0.7 of this project.
 
 ### Contributing
 
