@@ -40,7 +40,7 @@ cap resque:status    # Check workers status
 cap resque:start     # Start Resque workers
 cap resque:stop      # Quit running Resque workers
 cap resque:restart   # Restart running Resque workers
-cap resque:scheduler:restart # 
+cap resque:scheduler:restart #
 cap resque:scheduler:start   # Starts Resque Scheduler with default configs
 cap resque:scheduler:stop    # Stops Resque Scheduler
 ```
@@ -72,6 +72,15 @@ Resque.logger = Logger.new("new_resque_log_file")
 ...somewhere sensible, such as in your resque.rake, to achieve logging.
 
 The chatter on: https://github.com/defunkt/resque/pull/450 gives more information. If using HEAD of this resque branch doesn't work for you, then pin to v0.0.7 of this project.
+
+### Limitations
+
+Starting workers is done concurently via capistrano and you are limited ssh connections limit on your server (default limit is 10)
+
+in order to use more workers please change your sshd configurtion (/etc/ssh/sshd_config)
+
+    MaxStartups 100
+
 
 ### Contributing
 
