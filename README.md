@@ -75,7 +75,7 @@ The chatter on: https://github.com/defunkt/resque/pull/450 gives more informatio
 
 ### Limitations
 
-Starting workers is done concurently via capistrano and you are limited ssh connections limit on your server (default limit is 10)
+Starting workers is done concurently via capistrano and you are limited by ssh connections limit on your server (default limit is 10)
 
 in order to use more workers please change your sshd configurtion (/etc/ssh/sshd_config)
 
