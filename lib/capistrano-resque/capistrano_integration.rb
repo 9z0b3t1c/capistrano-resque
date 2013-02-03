@@ -8,6 +8,7 @@ module CapistranoResque
 
         _cset(:workers, {"*" => 1})
         _cset(:resque_kill_signal, "QUIT")
+        _cset(:interval, "5")
 
         def workers_roles
           return workers.keys if workers.first[1].is_a? Hash
@@ -33,7 +34,7 @@ module CapistranoResque
 
         def start_command(queue, pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
-           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 \
+           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} \
            #{fetch(:bundle_cmd, "bundle")} exec rake resque:work"
         end
 
@@ -96,7 +97,7 @@ module CapistranoResque
             stop
             start
           end
-          
+
           namespace :scheduler do
             desc "Starts resque scheduler with default configs"
             task :start, :roles => :resque_scheduler do
