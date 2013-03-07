@@ -26,8 +26,9 @@ module CapistranoResque
         end
 
         def status_command
-          "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-            for f in $(ls #{current_path}/tmp/pids/resque_work*.pid); \
+          "pids = `ls #{current_path}/tmp/pids/resque_work*.pid`; \
+           if [[ $? != 0 ]]; then \
+            for f in $pids; \
               do ps -p $(cat $f) | sed -n 2p ; done \
            ;fi"
         end
@@ -39,8 +40,9 @@ module CapistranoResque
         end
 
         def stop_command
-          "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-           for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; \
+          "pids = `ls #{current_path}/tmp/pids/resque_work*.pid`; \
+           if [[ $? != 0 ]]; then \
+            for f in $pids; \
              do #{try_sudo} kill -s #{resque_kill_signal} `cat $f` \
              && rm $f ;done \
            ;fi"
