@@ -2,6 +2,12 @@
 
 Basic tasks for putting some Resque in your Cap.
 
+### In your Gemfile:
+
+```
+gem "capistrano-resque", "~> 0.1.0"
+```
+
 ### In your Capfile:
 
 ```
