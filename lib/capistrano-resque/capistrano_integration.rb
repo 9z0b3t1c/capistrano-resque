@@ -26,8 +26,9 @@ module CapistranoResque
         end
 
         def status_command
-          "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-            for f in $(ls #{current_path}/tmp/pids/resque_work*.pid); \
+          "PIDS=`ls #{current_path}/tmp/pids/resque_work*.pid`; \
+           if [ \"$?\" == \"0\" ]; then \
+            for f in $PIDS; \
               do ps -p $(cat $f) | sed -n 2p ; done \
            ;fi"
         end
@@ -35,12 +36,13 @@ module CapistranoResque
         def start_command(queue, pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} \
-           #{fetch(:bundle_cmd, "bundle")} exec rake resque:work"
+           #{fetch(:bundle_cmd, "bundle")} exec rake environment resque:work"
         end
 
         def stop_command
-          "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-           for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; \
+          "PIDS=`ls #{current_path}/tmp/pids/resque_work*.pid`; \
+           if [ \"$?\" == \"0\" ]; then \
+            for f in $PIDS; \
              do #{try_sudo} kill -s #{resque_kill_signal} `cat $f` \
              && rm $f ;done \
            ;fi"
@@ -61,7 +63,7 @@ module CapistranoResque
         namespace :resque do
           desc "See current worker status"
           task :status, :roles => lambda { workers_roles() }, :on_no_matching_servers => :continue do
-            run(status_command)
+            run(status_command, :shell => "/bin/bash")
           end
 
           desc "Start Resque workers"
@@ -73,7 +75,7 @@ module CapistranoResque
                 threads = []
                 number_of_workers.times do
                   pid = "./tmp/pids/resque_work_#{worker_id}.pid"
-                  threads << Thread.new(pid) { |pid| run(start_command(queue, pid), :roles => role) }
+                  threads << Thread.new(pid) { |pid| run(start_command(queue, pid), :roles => role, :shell => "/bin/bash") }
                   worker_id += 1
                 end
                 threads.each(&:join)
@@ -89,7 +91,7 @@ module CapistranoResque
           # CONT - Start to process new jobs again after a USR2 (resume)
           desc "Quit running Resque workers"
           task :stop, :roles => lambda { workers_roles() }, :on_no_matching_servers => :continue do
-            run(stop_command)
+            run(stop_command, :shell => "/bin/bash")
           end
 
           desc "Restart running Resque workers"
