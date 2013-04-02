@@ -33,9 +33,12 @@ module CapistranoResque
         end
 
         def start_command(queue, pid)
-          "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
-           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} \
-           #{fetch(:bundle_cmd, "bundle")} exec rake resque:work"
+          "cd #{current_path} && RAILS_ENV=#{rails_env} \
+           bundle exec resque work
+            --queues=#{queue} \
+           --pid=#{pid} \
+           --daemon=true \
+          --interval=#{interval}"
         end
 
         def stop_command
@@ -49,7 +52,7 @@ module CapistranoResque
         def start_scheduler(pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 \
-           #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler"
+           bundle exec rake resque:scheduler"
         end
 
         def stop_scheduler(pid)
