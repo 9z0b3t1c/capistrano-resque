@@ -66,7 +66,7 @@ Backgrounding and logging are current sticking points. I'm using the HEAD of res
 In your Gemfile, you will need to specify:
 
 ```
-gem 'resque', :git => 'git://github.com/defunkt/resque.git', :branch => '1-x-stable'
+gem 'resque', :git => 'git://github.com/resque/resque.git', :branch => '1-x-stable'
 ```
 
 Also, you will need to include:
