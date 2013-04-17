@@ -48,7 +48,7 @@ module CapistranoResque
 
         def start_scheduler(pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} \
-           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 \
+           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
            #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler"
         end
 
