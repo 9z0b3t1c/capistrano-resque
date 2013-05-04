@@ -37,8 +37,8 @@ module CapistranoResque
         end
 
         def stop_command
-          "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-           for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; \
+          "if [ -e #{previous_release}/tmp/pids/resque_work_1.pid ]; then \
+           for f in `ls #{previous_release}/tmp/pids/resque_work*.pid`; \
              do #{try_sudo} kill -s #{resque_kill_signal} `cat $f` \
              && rm $f ;done \
            ;fi"
