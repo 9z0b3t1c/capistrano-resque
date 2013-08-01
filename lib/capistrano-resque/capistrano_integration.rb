@@ -67,7 +67,7 @@ module CapistranoResque
           desc "Start Resque workers"
           task :start, :roles => lambda { workers_roles() }, :on_no_matching_servers => :continue do
 
-            Resque.before_fork = Proc.new { ActiveRecord::Base.establish_connection }
+            Resque.before_fork = Proc.new { ActiveRecord::Base.establish_connection } if defined?(PG)
 
             for_each_workers do |role, workers|
               worker_id = 1
