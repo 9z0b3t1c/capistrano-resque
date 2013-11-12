@@ -5,7 +5,7 @@ Basic tasks for putting some Resque in your Cap.
 ### In your Gemfile:
 
 ```
-gem "capistrano-resque", "~> 0.1.0"
+gem "capistrano-resque", "~> 0.1.0", :require => false
 ```
 
 ### In your Capfile:
@@ -13,6 +13,10 @@ gem "capistrano-resque", "~> 0.1.0"
 ```
 require "capistrano-resque"
 ```
+
+Note: You must tell Bundler not to automatically require the file, otherwise the gem
+will try to load the Capistrano tasks outside of the context of running the `cap` command
+(e.g. running `rails console`).
 
 ### In your deploy.rb:
 
