@@ -54,7 +54,7 @@ module CapistranoResque
 
         def stop_scheduler(pid)
           "if [ -e #{pid} ]; then \
-            #{try_sudo} kill $(cat #{pid}) ; rm #{pid} \
+            #{try_sudo} kill -s #{resque_kill_signal} $(cat #{pid}) ; rm #{pid} \
            ;fi"
         end
 
