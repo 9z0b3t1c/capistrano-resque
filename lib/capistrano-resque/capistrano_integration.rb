@@ -40,10 +40,10 @@ module CapistranoResque
 
         def stop_command
           "if [ -e #{current_path}/tmp/pids/resque_work_1.pid ]; then \
-           for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; \
-             do #{try_sudo} kill -s #{resque_kill_signal} `cat $f` \
-             && rm $f ;done \
-           ;fi"
+            for f in `ls #{current_path}/tmp/pids/resque_work*.pid`; \
+              do ps -ef | grep `cat $f` | grep -v grep && #{try_sudo} kill -s #{resque_kill_signal} `cat $f`; \
+              rm $f ;done \
+          ;fi"
         end
 
         def start_scheduler(pid)
