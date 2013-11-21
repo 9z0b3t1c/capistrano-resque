@@ -36,6 +36,9 @@ role :resque_worker, "app_domain"
 role :resque_scheduler, "app_domain"
 
 set :workers, { "my_queue_name" => 2 }
+
+# Uncomment this line if your workers need access to the Rails environment:
+# set :resque_environment_task, true
 ```
 
 You can also specify multiple queues and the number of workers
@@ -50,6 +53,16 @@ The above will start five workers in total:
  * one listening on the `archive` queue
  * one listening on the `search_index, cache_warming` queue
  * three listening on the `mailing` queue
+
+### Rails Environment
+
+With Rails, Resque requires loading the Rails environment task to have access to your models, etc. (e.g. `QUEUE=* rake environment resque:work`). However, Resque is often used without Rails (and even if you are using Rails, you may not need/want to load the Rails environment). As such, the `environment` task is not automatically included.
+
+If you would like to load the `environment` task automatically, add this to your `deploy.rb`:
+
+```
+set :resque_environment_task, true
+``` 
 
 ### The tasks
 
