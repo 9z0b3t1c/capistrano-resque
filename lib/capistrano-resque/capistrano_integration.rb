@@ -9,6 +9,7 @@ module CapistranoResque
         _cset(:workers, {"*" => 1})
         _cset(:resque_kill_signal, "QUIT")
         _cset(:interval, "5")
+        _cset(:capistrano_resque_rails_env)  { fetch :rails_env, "production" }
 
         def workers_roles
           return workers.keys if workers.first[1].is_a? Hash
@@ -33,7 +34,7 @@ module CapistranoResque
         end
 
         def start_command(queue, pid)
-          "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
+          "cd #{current_path} && RAILS_ENV=#{capistrano_resque_rails_env} QUEUE=\"#{queue}\" \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} \
            #{fetch(:bundle_cmd, "bundle")} exec rake resque:work"
         end
@@ -47,7 +48,7 @@ module CapistranoResque
         end
 
         def start_scheduler(pid)
-          "cd #{current_path} && RAILS_ENV=#{rails_env} \
+          "cd #{current_path} && RAILS_ENV=#{capistrano_resque_rails_env} \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
            #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler"
         end
