@@ -5,8 +5,19 @@ Basic tasks for putting some Resque in your Cap.
 ### In your Gemfile:
 
 ```
-gem "capistrano-resque", "~> 0.1.0", :require => false
+gem "capistrano-resque", "~> 0.1.0", require: false
 ```
+
+#### Capistrano 3.0
+
+We are currently working to fully support Capistrano 3.0. Until an updated gem is released,
+you can tell Bundler to use this GitHub repository:
+
+```
+gem "capistrano-resque", github: "sshinger/capistrano-resque", require: false
+```
+
+Please report any issues you run into using Capistrano 3.0.
 
 ### In your Capfile:
 
@@ -14,9 +25,9 @@ gem "capistrano-resque", "~> 0.1.0", :require => false
 require "capistrano-resque"
 ```
 
-Note: You must tell Bundler not to automatically require the file, otherwise the gem
-will try to load the Capistrano tasks outside of the context of running the `cap` command
-(e.g. running `rails console`).
+Note: You must tell Bundler not to automatically require the file (by using `require: false`),
+otherwise the gem will try to load the Capistrano tasks outside of the context of running
+the `cap` command (e.g. running `rails console`).
 
 ### In your deploy.rb:
 
@@ -85,9 +96,9 @@ The chatter on: https://github.com/defunkt/resque/pull/450 gives more informatio
 
 ### Limitations
 
-Starting workers is done concurently via capistrano and you are limited by ssh connections limit on your server (default limit is 10)
+Starting workers is done concurrently via Capistrano and you are limited by ssh connections limit on your server (default limit is 10)
 
-in order to use more workers please change your sshd configurtion (/etc/ssh/sshd_config)
+To to use more workers, please change your sshd configuration (/etc/ssh/sshd_config)
 
     MaxStartups 100
 
