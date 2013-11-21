@@ -103,7 +103,7 @@ namespace :resque do
       on roles :resque_scheduler do
         pid = "#{current_path}/tmp/pids/scheduler.pid"
         if test "[ -e #{pid} ]"
-          sudo :kill, "$(cat #{pid}); rm #{pid}"
+          sudo :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
         end
       end
     end
