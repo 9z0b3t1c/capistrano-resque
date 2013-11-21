@@ -3,6 +3,7 @@ namespace :load do
     set :workers, {"*" => 1}
     set :resque_kill_signal, "QUIT"
     set :interval, "5"
+    set :resque_environment_task, false
   end
 end
 
@@ -49,7 +50,7 @@ namespace :resque do
             threads << Thread.new(pid) do |pid|
               on roles(role) do
                 within current_path do
-                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} resque:work}
+                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work}
                 end
               end
             end
