@@ -14,7 +14,7 @@ We are currently working to fully support Capistrano 3.0. Until an updated gem i
 you can tell Bundler to use this GitHub repository:
 
 ```
-gem "capistrano-resque", github: "sshinger/capistrano-resque", require: false
+gem "capistrano-resque", github: "sshingler/capistrano-resque", require: false
 ```
 
 Please report any issues you run into using Capistrano 3.0.
