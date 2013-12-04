@@ -46,11 +46,11 @@ namespace :resque do
           info "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
           threads = []
           number_of_workers.times do
-            pid = "./tmp/pids/resque_work_#{worker_id}.pid"
+            pid = "#{current_path}/tmp/pids/resque_work_#{worker_id}.pid"
             threads << Thread.new(pid) do |pid|
               on roles(role) do
                 within current_path do
-                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work}
+                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work && sleep 3}
                 end
               end
             end
@@ -75,7 +75,13 @@ namespace :resque do
         within current_path do
           pids = capture(:ls, "-1 tmp/pids/resque_work*.pid")
           pids.each_line do |pid_file|
-            sudo :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp}) && rm #{pid_file.chomp}"
+            pid = "cat #{current_path}/#{pid_file.chomp}"
+            if test "ps ax | grep -v grep | grep $(#{pid}) > /dev/null"
+              execute :kill, "-s", "#{fetch(:resque_kill_signal)} $(#{pid}) && rm #{pid_file.chomp}"
+            else
+              info "Worker from pid file do not exist"
+              execute "rm #{current_path}/#{pid_file.chomp}"
+            end
           end
         end
       end
@@ -104,7 +110,7 @@ namespace :resque do
       on roles :resque_scheduler do
         pid = "#{current_path}/tmp/pids/scheduler.pid"
         if test "[ -e #{pid} ]"
-          sudo :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
+          execute :kill, "-s" "#{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
         end
       end
     end
