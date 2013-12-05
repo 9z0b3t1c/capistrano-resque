@@ -2,7 +2,8 @@
 * Added support for Capistrano 3.0
 * Set MUTE environment variable for resque_scheduler
 * Added a `resque_environment_task` option to load the `environment` rake task before running Resque workers
-
+* Add a resque:scheduler:status task
+* 
 # 0.1.0
 * Interval is configurable
 * Fix issue where pids weren't created correctly
