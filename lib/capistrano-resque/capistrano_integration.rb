@@ -56,6 +56,12 @@ module CapistranoResque
             ;fi"
         end
 
+        def status_scheduler
+          "if [ -e #{current_path}/tmp/pids/scheduler.pid ]; then \
+             ps -p $(cat #{current_path}/tmp/pids/scheduler.pid) | sed -n 2p \
+           ;fi"
+        end
+
         def start_scheduler(pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
@@ -109,6 +115,11 @@ module CapistranoResque
           end
 
           namespace :scheduler do
+            desc "See current scheduler status"
+            task :status, :roles => :resque_scheduler do
+              run(status_scheduler)
+            end
+
             desc "Starts resque scheduler with default configs"
             task :start, :roles => :resque_scheduler do
               pid = "#{current_path}/tmp/pids/scheduler.pid"

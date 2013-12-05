@@ -89,6 +89,16 @@ namespace :resque do
   end
 
   namespace :scheduler do
+    desc "See current scheduler status"
+    task :status do
+      on roles :resque_scheduler do
+        pid = "#{current_path}/tmp/pids/scheduler.pid"
+        if test "[ -e #{pid} ]"
+          info capture(:ps, "-f -p $(cat #{pid}) | sed -n 2p")
+        end
+      end
+    end
+
     desc "Starts resque scheduler with default configs"
     task :start do
       on roles :resque_scheduler do
