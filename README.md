@@ -54,6 +54,12 @@ The above will start five workers in total:
  * one listening on the `search_index, cache_warming` queue
  * three listening on the `mailing` queue
 
+If for some reason tasks `resque:start` and `resque:scheduler:start` do not work then try to add small delay ex:
+
+```
+set :resque_background_delay, 3     # Default is nil
+```
+
 ### Rails Environment
 
 With Rails, Resque requires loading the Rails environment task to have access to your models, etc. (e.g. `QUEUE=* rake environment resque:work`). However, Resque is often used without Rails (and even if you are using Rails, you may not need/want to load the Rails environment). As such, the `environment` task is not automatically included.
