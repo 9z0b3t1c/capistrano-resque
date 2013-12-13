@@ -78,16 +78,17 @@ namespace :resque do
   desc "Quit running Resque workers"
   task :stop do
     on roles(*workers_roles) do
-      if test "[ -e #{current_path}/tmp/pids/resque_work_1.pid ]"
-        within current_path do
-          pids = capture(:ls, "-1 tmp/pids/resque_work*.pid")
-          pids.each_line do |pid_file|
-            pid = "cat #{current_path}/#{pid_file.chomp}"
+      within current_path do
+        pid_file = "#{current_path}/tmp/pids/resque_work_1.pid"
+        if test "[ -e #{pid_file} ]"
+          pid_files = capture(:ls, "-1 #{current_path}/tmp/pids/resque_work*.pid")
+          pid_files.each_line do |pid_file|
+            pid = "cat #{pid_file.chomp}"
             if test "ps ax | grep -v grep | grep $(#{pid}) > /dev/null"
               execute :kill, "-s", "#{fetch(:resque_kill_signal)} $(#{pid}) && rm #{pid_file.chomp}"
             else
               info "Worker from pid file do not exist"
-              execute "rm #{current_path}/#{pid_file.chomp}"
+              execute "rm #{pid_file.chomp}"
             end
           end
         end
@@ -107,7 +108,7 @@ namespace :resque do
       on roles :resque_scheduler do
         pid = "#{current_path}/tmp/pids/scheduler.pid"
         within current_path do
-          execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 resque:scheduler}
+          execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 resque:scheduler #{check_background_delay}}
         end
       end
     end
@@ -115,9 +116,17 @@ namespace :resque do
     desc "Stops resque scheduler"
     task :stop do
       on roles :resque_scheduler do
-        pid = "#{current_path}/tmp/pids/scheduler.pid"
-        if test "[ -e #{pid} ]"
-          execute :kill, "-s" "#{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
+        within current_path do
+          pid_file = "#{current_path}/tmp/pids/scheduler.pid"
+          if test "[ -e #{pid_file} ]"
+            pid = "cat #{pid_file.chomp}"
+            if test "ps ax | grep -v grep | grep $(#{pid}) > /dev/null"
+              execute :kill, "-s", "#{fetch(:resque_kill_signal)} $(#{pid}) && rm #{pid_file.chomp}"
+            else
+              info "Worker from pid file do not exist"
+              execute "rm #{pid_file.chomp}"
+            end
+          end
         end
       end
     end
