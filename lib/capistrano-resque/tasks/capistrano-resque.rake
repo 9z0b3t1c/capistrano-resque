@@ -4,6 +4,7 @@ namespace :load do
     set :resque_kill_signal, "QUIT"
     set :interval, "5"
     set :resque_environment_task, false
+    set :resque_background_delay, nil
   end
 end
 
@@ -20,6 +21,12 @@ namespace :resque do
       end
     else
       yield(:resque_worker, fetch(:workers))
+    end
+  end
+
+  def check_background_delay
+    if fetch(:resque_background_delay)
+      "&& sleep #{fetch(:resque_background_delay)}"
     end
   end
 
@@ -50,7 +57,7 @@ namespace :resque do
             threads << Thread.new(pid) do |pid|
               on roles(role) do
                 within current_path do
-                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work && sleep 3}
+                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work #{check_background_delay}}
                 end
               end
             end
