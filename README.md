@@ -48,6 +48,12 @@ for each queue:
 set :workers, { "archive" => 1, "mailing" => 3, "search_index, cache_warming" => 1 }
 ```
 
+If for some reason tasks `resque:start` and `resque:scheduler:start` do not work then try to add small delay ex:
+
+```
+set :resque_background_delay, 3     # Default is nil
+```
+
 The above will start five workers in total:
 
  * one listening on the `archive` queue
