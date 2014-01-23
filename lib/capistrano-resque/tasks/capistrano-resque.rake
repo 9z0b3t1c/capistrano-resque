@@ -48,10 +48,8 @@ namespace :resque do
           number_of_workers.times do
             pid = "./tmp/pids/resque_work_#{worker_id}.pid"
             threads << Thread.new(pid) do |pid|
-              on roles(role) do
-                within current_path do
-                  execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work}
-                end
+              within current_path do
+                execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work}
               end
             end
             worker_id += 1
