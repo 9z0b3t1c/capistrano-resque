@@ -69,7 +69,7 @@ namespace :resque do
         within current_path do
           pids = capture(:ls, "-1 tmp/pids/resque_work*.pid")
           pids.each_line do |pid_file|
-            sudo :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp}) && rm #{pid_file.chomp}"
+            execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp}) && rm #{pid_file.chomp}"
           end
         end
       end
@@ -108,7 +108,7 @@ namespace :resque do
       on roles :resque_scheduler do
         pid = "#{current_path}/tmp/pids/scheduler.pid"
         if test "[ -e #{pid} ]"
-          sudo :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
+          execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
         end
       end
     end
