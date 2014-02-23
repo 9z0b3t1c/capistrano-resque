@@ -25,6 +25,14 @@ namespace :resque do
     end
   end
 
+  #check if the pid inside the pid file is an existing process, and only then kill it
+  def kill_process_if_running(pid_file)
+    pid_exists = capture(:if,"ps -A -o pid | grep $(cat #{pid_file.chomp}) > /dev/null; then echo 'exists'; else echo 'not exists'; fi")
+    if test "[ '#{pid_exists}' = 'exists' ]"
+      execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp})"
+    end
+  end
+
   desc "See current worker status"
   task :status do
     on roles(*workers_roles) do
@@ -68,11 +76,13 @@ namespace :resque do
   desc "Quit running Resque workers"
   task :stop do
     on roles(*workers_roles) do
-      if test "[ -e #{fetch(:worker_pid_folder)}/resque_work_1.pid ]"
+      number_of_pid_files = capture(:ls,"-l #{fetch(:worker_pid_folder)}/resque_work*.pid 2> /dev/null | wc -l")
+      if test "[ #{number_of_pid_files} -gt 0 ]"
         within current_path do
           pids = capture(:ls, "-1 #{fetch(:worker_pid_folder)}/resque_work*.pid")
           pids.each_line do |pid_file|
-            execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp}) && rm #{pid_file.chomp}"
+            kill_process_if_running(pid_file)
+            execute "rm #{pid_file.chomp}"
           end
         end
       end
