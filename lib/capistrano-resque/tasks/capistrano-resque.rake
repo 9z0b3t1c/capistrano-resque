@@ -4,6 +4,8 @@ namespace :load do
     set :resque_kill_signal, "QUIT"
     set :interval, "5"
     set :resque_environment_task, false
+    set :worker_log_folder, "./log"
+    set :worker_pid_folder, "./tmp/pids"
   end
 end
 
@@ -23,12 +25,20 @@ namespace :resque do
     end
   end
 
+  #check if the pid inside the pid file is an existing process, and only then kill it
+  def kill_process_if_running(pid_file)
+    pid_exists = capture(:if,"ps -A -o pid | grep $(cat #{pid_file.chomp}) > /dev/null; then echo 'exists'; else echo 'not exists'; fi")
+    if test "[ '#{pid_exists}' = 'exists' ]"
+      execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp})"
+    end
+  end
+
   desc "See current worker status"
   task :status do
     on roles(*workers_roles) do
-      if test "[ -e #{current_path}/tmp/pids/resque_work_1.pid ]"
+      if test "[ -e #{fetch(:worker_pid_folder)}/resque_work_1.pid ]"
         within current_path do
-          files = capture(:ls, "-1 tmp/pids/resque_work*.pid")
+          files = capture(:ls, "-1 #{fetch(:worker_pid_folder)}/resque_work*.pid")
           files.each_line do |file|
             info capture(:ps, "-f -p $(cat #{file.chomp}) | sed -n 2p")
           end
@@ -45,9 +55,10 @@ namespace :resque do
         workers.each_pair do |queue, number_of_workers|
           info "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
           number_of_workers.times do
-            pid = "./tmp/pids/resque_work_#{worker_id}.pid"
+            pid = "#{fetch(:worker_pid_folder)}/resque_work_#{worker_id}.pid"
+            log = "#{fetch(:worker_log_folder)}/resque_work_#{worker_id}.log"
             within current_path do
-              execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work}
+              execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work >> #{log}}
             end
             worker_id += 1
           end
@@ -65,11 +76,13 @@ namespace :resque do
   desc "Quit running Resque workers"
   task :stop do
     on roles(*workers_roles) do
-      if test "[ -e #{current_path}/tmp/pids/resque_work_1.pid ]"
+      number_of_pid_files = capture(:ls,"-l #{fetch(:worker_pid_folder)}/resque_work*.pid 2> /dev/null | wc -l")
+      if test "[ #{number_of_pid_files} -gt 0 ]"
         within current_path do
-          pids = capture(:ls, "-1 tmp/pids/resque_work*.pid")
+          pids = capture(:ls, "-1 #{fetch(:worker_pid_folder)}/resque_work*.pid")
           pids.each_line do |pid_file|
-            execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp}) && rm #{pid_file.chomp}"
+            kill_process_if_running(pid_file)
+            execute "rm #{pid_file.chomp}"
           end
         end
       end
