@@ -38,7 +38,7 @@ module CapistranoResque
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} \
            #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment" if fetch(:resque_environment_task)} \
-           resque:work"
+           resque:work > /dev/null"
         end
 
         def stop_command
@@ -58,7 +58,7 @@ module CapistranoResque
         def start_scheduler(pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
-           #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler"
+           #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler > /dev/null"
         end
 
         def stop_scheduler(pid)
