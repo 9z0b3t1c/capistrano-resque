@@ -87,6 +87,7 @@ add the following line to your `deploy.rb`:
 ```
 after "deploy:restart", "resque:restart"
 ```
+
 ### Logging
 
 Backgrounding and logging are current sticking points. I'm using the HEAD of resque's 1-x-stable branch for the 0.0.8 release because it has some new logging functions not yet slated for a resque release.
@@ -106,6 +107,20 @@ Resque.logger = Logger.new("new_resque_log_file")
 ...somewhere sensible, such as in your resque.rake, to achieve logging.
 
 The chatter on: https://github.com/defunkt/resque/pull/450 gives more information. If using HEAD of this resque branch doesn't work for you, then pin to v0.0.7 of this project.
+
+### Redirecting output
+
+If you get this error:
+```
+Errno::EIO: Input/output error - <STDERR>
+```
+
+It may help to redirect the output to a file.  Here's how you can direct all output (stdout and
+stderr) to `log/resque.log`:
+
+```ruby
+set :resque_redirection, ">> log/resque.log 2>> log/resque.log"
+```
 
 ### Limitations
 
