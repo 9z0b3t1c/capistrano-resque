@@ -119,7 +119,7 @@ It may help to redirect the output to a file.  Here's how you can direct all out
 stderr) to `log/resque.log`:
 
 ```ruby
-set :resque_redirection, ">> log/resque.log 2>> log/resque.log"
+set :resque_log_file, "log/resque.log"
 ```
 
 ### Limitations
