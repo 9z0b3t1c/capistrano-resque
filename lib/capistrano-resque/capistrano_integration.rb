@@ -10,6 +10,11 @@ module CapistranoResque
         _cset(:resque_kill_signal, "QUIT")
         _cset(:interval, "5")
         _cset(:resque_environment_task, false)
+        _cset(:resque_log_file, "/dev/null")
+
+        def output_redirection
+          ">> #{fetch(:resque_log_file)} 2>> #{fetch(:resque_log_file)}"
+        end
 
         def workers_roles
           return workers.keys if workers.first[1].is_a? Hash
@@ -38,7 +43,7 @@ module CapistranoResque
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} \
            #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment" if fetch(:resque_environment_task)} \
-           resque:work"
+           resque:work #{output_redirection}"
         end
 
         def stop_command
@@ -65,7 +70,7 @@ module CapistranoResque
         def start_scheduler(pid)
           "cd #{current_path} && RAILS_ENV=#{rails_env} \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
-           #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler"
+           #{fetch(:bundle_cmd, "bundle")} exec rake resque:scheduler #{output_redirection}"
         end
 
         def stop_scheduler(pid)
