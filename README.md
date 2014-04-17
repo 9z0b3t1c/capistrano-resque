@@ -110,13 +110,9 @@ The chatter on: https://github.com/defunkt/resque/pull/450 gives more informatio
 
 ### Redirecting output
 
-If you get this error:
-```
-Errno::EIO: Input/output error - <STDERR>
-```
+Due to issues in the way Resque 1.x handles background processes, we automatically redirect stderr and stdout to `/dev/null`.
 
-It may help to redirect the output to a file.  Here's how you can direct all output (stdout and
-stderr) to `log/resque.log`:
+If you'd like to capture this output instead, just specify a log file:
 
 ```ruby
 set :resque_log_file, "log/resque.log"
