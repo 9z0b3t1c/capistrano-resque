@@ -9,6 +9,10 @@ namespace :load do
 end
 
 namespace :resque do
+  def output_redirection
+    ">> #{fetch(:resque_log_file)} 2>> #{fetch(:resque_log_file)}"
+  end
+
   def workers_roles
     return fetch(:workers).keys if fetch(:workers).first[1].is_a? Hash
     [:resque_worker]
@@ -48,8 +52,7 @@ namespace :resque do
           number_of_workers.times do
             pid = "./tmp/pids/resque_work_#{worker_id}.pid"
             within current_path do
-              redirection = ">> #{fetch(:resque_log_file)} 2>> #{fetch(:resque_log_file)}"
-              execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work #{redirection}}
+              execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work #{output_redirection}}
             end
             worker_id += 1
           end
@@ -100,7 +103,7 @@ namespace :resque do
       on roles :resque_scheduler do
         pid = "#{current_path}/tmp/pids/scheduler.pid"
         within current_path do
-          execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 resque:scheduler}
+          execute :rake, %{RAILS_ENV=#{fetch(:rails_env)} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 resque:scheduler #{output_redirection}}
         end
       end
     end
