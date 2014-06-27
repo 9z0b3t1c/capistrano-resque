@@ -37,6 +37,8 @@ role :resque_scheduler, "app_domain"
 
 set :workers, { "my_queue_name" => 2 }
 
+set :linked_dirs, %w(tmp/pids)
+
 # Uncomment this line if your workers need access to the Rails environment:
 # set :resque_environment_task, true
 ```
