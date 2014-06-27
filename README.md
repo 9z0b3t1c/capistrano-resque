@@ -37,6 +37,8 @@ role :resque_scheduler, "app_domain"
 
 set :workers, { "my_queue_name" => 2 }
 
+# To ensure resque can start/stop properly between deploys, you'll want to make
+# sure to link the `tmp/pids` directory.
 set :linked_dirs, %w(tmp/pids)
 
 # Uncomment this line if your workers need access to the Rails environment:
