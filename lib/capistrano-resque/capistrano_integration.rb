@@ -12,6 +12,10 @@ module CapistranoResque
         _cset(:resque_environment_task, false)
         _cset(:resque_log_file, "/dev/null")
 
+        def rails_env
+          fetch(:resque_rails_env, fetch(:rails_env, "production"))
+        end
+
         def output_redirection
           ">> #{fetch(:resque_log_file)} 2>> #{fetch(:resque_log_file)}"
         end
