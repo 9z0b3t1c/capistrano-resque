@@ -58,6 +58,32 @@ The above will start five workers in total:
  * one listening on the `search_index, cache_warming` queue
  * three listening on the `mailing` queue
 
+### Multiple Servers/Roles
+
+You can also start up workers on multiple servers/roles:
+
+```
+role :worker_server_A,  <server-ip-A>
+role :worker_servers_B_and_C,  [<server-ip-B>, <server-ip-C>]
+
+set :workers, {
+  worker_server_A: {
+    "archive" => 1,
+    "mailing" => 1
+  },
+  worker_servers_B_and_C: {
+    "search_index" => 1,
+  }
+}
+```
+
+The above will start four workers in total:
+
+ * one `archive` on Server A
+ * one `mailing` on Server A
+ * one `search_index` on Server B
+ * one `search_index` on Server C
+
 ### Rails Environment
 
 With Rails, Resque requires loading the Rails environment task to have access to your models, etc. (e.g. `QUEUE=* rake environment resque:work`). However, Resque is often used without Rails (and even if you are using Rails, you may not need/want to load the Rails environment). As such, the `environment` task is not automatically included.
@@ -66,7 +92,13 @@ If you would like to load the `environment` task automatically, add this to your
 
 ```
 set :resque_environment_task, true
-``` 
+```
+
+If you would like your workers to use a different Rails environment than your actual Rails app:
+
+```
+set :resque_rails_env, "my_resque_env"
+```
 
 ### The tasks
 
