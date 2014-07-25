@@ -78,11 +78,19 @@ namespace :resque do
     on roles(*workers_roles) do
       if test "[ -e #{current_path}/tmp/pids/resque_work_1.pid ]"
         within current_path do
-          pids = capture(:ls, "-1 tmp/pids/resque_work*.pid")
-          pids.each_line do |pid_file|
-            execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid_file.chomp}) && rm #{pid_file.chomp}"
+          pids = capture(:ls, "-1 tmp/pids/resque_work*.pid").lines.map(&:chomp)
+          pids.each do |pid_file|
+            pid = capture(:cat, pid_file)
+            if test "kill -0 #{pid} > /dev/null 2>&1"
+              execute :kill, "-s #{fetch(:resque_kill_signal)} #{pid} && rm #{pid_file}"
+            else
+              info "Process #{pid} from #{pid_file} is not running, cleaning up stale PID file"
+              execute :rm, pid_file
+            end
           end
         end
+      else
+        info "No resque PID files found"
       end
     end
   end
