@@ -1,23 +1,13 @@
 # Capistrano Resque
 
-Basic tasks for putting some Resque in your Cap.
+Basic tasks for putting some Resque in your Cap. This should be fully compatible with both Capistrano 2.x and 3.x,
+but if you run into any issues please report them.
 
 ### In your Gemfile:
 
 ```
-gem "capistrano-resque", "~> 0.1.0", require: false
+gem "capistrano-resque", "~> 0.2.0", require: false
 ```
-
-#### Capistrano 3.0
-
-We are currently working to fully support Capistrano 3.0. Until an updated gem is released,
-you can tell Bundler to use this GitHub repository:
-
-```
-gem "capistrano-resque", github: "sshingler/capistrano-resque", require: false
-```
-
-Please report any issues you run into using Capistrano 3.0.
 
 ### In your Capfile:
 
