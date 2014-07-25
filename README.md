@@ -27,9 +27,10 @@ role :resque_scheduler, "app_domain"
 
 set :workers, { "my_queue_name" => 2 }
 
-# To ensure resque can start/stop properly between deploys, you'll want to make
-# sure to link the `tmp/pids` directory.
-set :linked_dirs, %w(tmp/pids)
+# We default to storing PID files in a tmp/pids folder in your shared path, but
+# you can customize it here (make sure to use a full path). The path will be
+# created before starting workers if it doesn't already exist.
+# set :resque_pid_path, -> { File.join(shared_path, 'tmp', 'pids') }
 
 # Uncomment this line if your workers need access to the Rails environment:
 # set :resque_environment_task, true
@@ -158,8 +159,9 @@ To to use more workers, please change your sshd configuration (/etc/ssh/sshd_con
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+4. If possible, make sure your changes apply to both the Capistrano v2 and v3 code (`capistrano_integration.rb` is v2, `capistrano-resque.rake` is v3)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create new Pull Request
 
 ### License
 

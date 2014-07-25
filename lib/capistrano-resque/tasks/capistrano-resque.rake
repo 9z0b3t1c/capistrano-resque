@@ -5,6 +5,7 @@ namespace :load do
     set :interval, "5"
     set :resque_environment_task, false
     set :resque_log_file, "/dev/null"
+    set :resque_pid_path, -> { File.join(shared_path, 'tmp', 'pids') }
   end
 end
 
@@ -34,12 +35,19 @@ namespace :resque do
     end
   end
 
+  def create_pid_path
+    if !(test "[ -d #{fetch(:resque_pid_path)} ]")
+      info "Creating #{fetch(:resque_pid_path)}"
+      execute :mkdir, "-p #{fetch(:resque_pid_path)}"
+    end
+  end
+
   desc "See current worker status"
   task :status do
     on roles(*workers_roles) do
-      if test "[ -e #{current_path}/tmp/pids/resque_work_1.pid ]"
+      if test "[ -e #{fetch(:resque_pid_path)}/resque_work_1.pid ]"
         within current_path do
-          files = capture(:ls, "-1 tmp/pids/resque_work*.pid")
+          files = capture(:ls, "-1 #{fetch(:resque_pid_path)}/resque_work*.pid")
           files.each_line do |file|
             info capture(:ps, "-f -p $(cat #{file.chomp}) | sed -n 2p")
           end
@@ -50,13 +58,15 @@ namespace :resque do
 
   desc "Start Resque workers"
   task :start do
+
     for_each_workers do |role, workers|
       on roles(role) do
+        create_pid_path
         worker_id = 1
         workers.each_pair do |queue, number_of_workers|
           info "Starting #{number_of_workers} worker(s) with QUEUE: #{queue}"
           number_of_workers.times do
-            pid = "./tmp/pids/resque_work_#{worker_id}.pid"
+            pid = "#{fetch(:resque_pid_path)}/resque_work_#{worker_id}.pid"
             within current_path do
               execute :rake, %{RAILS_ENV=#{rails_env} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{fetch(:interval)} #{"environment" if fetch(:resque_environment_task)} resque:work #{output_redirection}}
             end
@@ -76,9 +86,9 @@ namespace :resque do
   desc "Quit running Resque workers"
   task :stop do
     on roles(*workers_roles) do
-      if test "[ -e #{current_path}/tmp/pids/resque_work_1.pid ]"
+      if test "[ -e #{fetch(:resque_pid_path)}/resque_work_1.pid ]"
         within current_path do
-          pids = capture(:ls, "-1 tmp/pids/resque_work*.pid").lines.map(&:chomp)
+          pids = capture(:ls, "-1 #{fetch(:resque_pid_path)}/resque_work*.pid").lines.map(&:chomp)
           pids.each do |pid_file|
             pid = capture(:cat, pid_file)
             if test "kill -0 #{pid} > /dev/null 2>&1"
@@ -105,7 +115,7 @@ namespace :resque do
     desc "See current scheduler status"
     task :status do
       on roles :resque_scheduler do
-        pid = "#{current_path}/tmp/pids/scheduler.pid"
+        pid = "#{fetch(:resque_pid_path)}/scheduler.pid"
         if test "[ -e #{pid} ]"
           info capture(:ps, "-f -p $(cat #{pid}) | sed -n 2p")
         end
@@ -115,7 +125,8 @@ namespace :resque do
     desc "Starts resque scheduler with default configs"
     task :start do
       on roles :resque_scheduler do
-        pid = "#{current_path}/tmp/pids/scheduler.pid"
+        create_pid_path
+        pid = "#{fetch(:resque_pid_path)}/scheduler.pid"
         within current_path do
           execute :rake, %{RAILS_ENV=#{rails_env} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 resque:scheduler #{output_redirection}}
         end
@@ -125,7 +136,7 @@ namespace :resque do
     desc "Stops resque scheduler"
     task :stop do
       on roles :resque_scheduler do
-        pid = "#{current_path}/tmp/pids/scheduler.pid"
+        pid = "#{fetch(:resque_pid_path)}/scheduler.pid"
         if test "[ -e #{pid} ]"
           execute :kill, "-s #{fetch(:resque_kill_signal)} $(cat #{pid}); rm #{pid}"
         end
