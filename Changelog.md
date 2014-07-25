@@ -1,8 +1,10 @@
-# Unreleased
+# 0.2.0
 * Added support for Capistrano 3.0
 * Set MUTE environment variable for resque_scheduler
 * Added a `resque_environment_task` option to load the `environment` rake task before running Resque workers
 * Add a resque:scheduler:status task
+* Detect stale PID files and clean up instead of aborting
+* Add a `resque_rails_env` setting in case workers need to be run in a different environment than the app itself
 
 # 0.1.0
 * Interval is configurable
