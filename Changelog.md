@@ -1,3 +1,8 @@
+# 0.2.1
+* Create the directory for pid files when it doesn't exist
+* Default pid files to `#{shared_path}/tmp/pids` now
+* Added a `:resque_pid_path` option to specify a custom path
+
 # 0.2.0
 * Added support for Capistrano 3.0
 * Set MUTE environment variable for resque_scheduler
