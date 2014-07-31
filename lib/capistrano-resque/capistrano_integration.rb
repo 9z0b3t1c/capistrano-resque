@@ -6,12 +6,12 @@ module CapistranoResque
     def self.load_into(capistrano_config)
       capistrano_config.load do
 
-        _cset(:workers, {"*" => 1})
-        _cset(:resque_kill_signal, "QUIT")
-        _cset(:interval, "5")
-        _cset(:resque_environment_task, false)
-        _cset(:resque_log_file, "/dev/null")
-        _cset(:resque_pid_path) { File.join(shared_path, 'tmp', 'pids') }
+        set(:workers, {"*" => 1})
+        set(:resque_kill_signal, "QUIT")
+        set(:interval, "5")
+        set(:resque_environment_task, false)
+        set(:resque_log_file, "/dev/null")
+        set(:resque_pid_path) { File.join(shared_path, 'tmp', 'pids') }
 
         def rails_env
           fetch(:resque_rails_env, fetch(:rails_env, "production"))
