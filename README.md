@@ -11,6 +11,8 @@ gem "capistrano-resque", "~> 0.2.0", require: false
 
 ### In your Capfile:
 
+Put this line __after__ any of capistrano's own `require`/`load` statements (specifically `load 'deploy'` for Cap v2):
+
 ```
 require "capistrano-resque"
 ```
