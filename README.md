@@ -24,6 +24,10 @@ the `cap` command (e.g. running `rails console`).
 ### In your deploy.rb:
 
 ```
+# Specify the server that Resque will be deployed on. If you are using Cap v3
+# and have multiple stages with different Resque requirements for each, then
+# these __must__ be set inside of the applicable config/deploy/... stage files
+# instead of config/deploy.rb:
 role :resque_worker, "app_domain"
 role :resque_scheduler, "app_domain"
 
