@@ -5,7 +5,7 @@ but if you run into any issues please report them.
 
 ### In your Gemfile:
 
-```
+```ruby
 gem "capistrano-resque", "~> 0.2.0", require: false
 ```
 
@@ -13,7 +13,7 @@ gem "capistrano-resque", "~> 0.2.0", require: false
 
 Put this line __after__ any of capistrano's own `require`/`load` statements (specifically `load 'deploy'` for Cap v2):
 
-```
+```ruby
 require "capistrano-resque"
 ```
 
@@ -23,7 +23,7 @@ the `cap` command (e.g. running `rails console`).
 
 ### In your deploy.rb:
 
-```
+```ruby
 # Specify the server that Resque will be deployed on. If you are using Cap v3
 # and have multiple stages with different Resque requirements for each, then
 # these __must__ be set inside of the applicable config/deploy/... stage files
@@ -45,7 +45,7 @@ set :workers, { "my_queue_name" => 2 }
 You can also specify multiple queues and the number of workers
 for each queue:
 
-```
+```ruby
 set :workers, { "archive" => 1, "mailing" => 3, "search_index, cache_warming" => 1 }
 ```
 
@@ -59,7 +59,7 @@ The above will start five workers in total:
 
 You can also start up workers on multiple servers/roles:
 
-```
+```ruby
 role :worker_server_A,  <server-ip-A>
 role :worker_servers_B_and_C,  [<server-ip-B>, <server-ip-C>]
 
@@ -87,13 +87,13 @@ With Rails, Resque requires loading the Rails environment task to have access to
 
 If you would like to load the `environment` task automatically, add this to your `deploy.rb`:
 
-```
+```ruby
 set :resque_environment_task, true
 ```
 
 If you would like your workers to use a different Rails environment than your actual Rails app:
 
-```
+```ruby
 set :resque_rails_env, "my_resque_env"
 ```
 
@@ -117,7 +117,7 @@ cap resque:scheduler:stop    # Stops Resque Scheduler
 To restart you workers automatically when `cap deploy:restart` is executed
 add the following line to your `deploy.rb`:
 
-```
+```ruby
 after "deploy:restart", "resque:restart"
 ```
 
@@ -127,13 +127,13 @@ Backgrounding and logging are current sticking points. I'm using the HEAD of res
 
 In your Gemfile, you will need to specify:
 
-```
+```ruby
 gem 'resque', :git => 'git://github.com/resque/resque.git', :branch => '1-x-stable'
 ```
 
 Also, you will need to include:
 
-```
+```ruby
 Resque.logger = Logger.new("new_resque_log_file")
 ```
 
