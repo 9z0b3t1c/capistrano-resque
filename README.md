@@ -6,7 +6,7 @@ but if you run into any issues please report them.
 ### In your Gemfile:
 
 ```ruby
-gem "capistrano-resque", "~> 0.2.0", require: false
+gem "capistrano-resque", "~> 0.2.1", require: false
 ```
 
 ### In your Capfile:
