@@ -12,9 +12,14 @@ module CapistranoResque
         _cset(:resque_environment_task, false)
         _cset(:resque_log_file, "/dev/null")
         _cset(:resque_pid_path) { File.join(shared_path, 'tmp', 'pids') }
+        _cset(:enable_shared_users, false)
 
         def rails_env
           fetch(:resque_rails_env, fetch(:rails_env, "production"))
+        end
+
+        def maybe_sudo
+          !!fetch(:enable_shared_users) ? try_sudo : ''
         end
 
         def output_redirection
@@ -36,6 +41,13 @@ module CapistranoResque
           end
         end
 
+        def run_and_rescue(command)
+          run(command)
+          true
+        rescue Capistrano::CommandError
+          false
+        end
+
         def status_command
           "if [ -e #{fetch(:resque_pid_path)}/resque_work_1.pid ]; then \
             for f in $(ls #{fetch(:resque_pid_path)}/resque_work*.pid); \
@@ -49,21 +61,6 @@ module CapistranoResque
            #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment" if fetch(:resque_environment_task)} \
            resque:work #{output_redirection}"
-        end
-
-        def stop_command
-          "if [ -e #{fetch(:resque_pid_path)}/resque_work_1.pid ]; then \
-           for f in `ls #{fetch(:resque_pid_path)}/resque_work*.pid`; \
-             do \
-               if kill -0 `cat $f`> /dev/null 2>&1; then \
-                 kill -s #{resque_kill_signal} `cat $f` \
-                 && rm $f \
-               ;else \
-                 echo 'Resque was not running, cleaning up stale PID file' \
-                 && rm $f \
-               ;fi \
-             ;done \
-           ;fi"
         end
 
         def status_scheduler
@@ -80,7 +77,7 @@ module CapistranoResque
 
         def stop_scheduler(pid)
           "if [ -e #{pid} ]; then \
-            kill -s #{resque_kill_signal} $(cat #{pid}) ; rm #{pid} \
+            #{maybe_sudo} kill -s #{resque_kill_signal} $(cat #{pid}) ; #{maybe_sudo} rm #{pid} \
            ;fi"
         end
 
@@ -123,7 +120,20 @@ module CapistranoResque
           # CONT - Start to process new jobs again after a USR2 (resume)
           desc "Quit running Resque workers"
           task :stop, :roles => lambda { workers_roles() }, :on_no_matching_servers => :continue do
-            run(stop_command)
+            if run_and_rescue "[ -e #{fetch(:resque_pid_path)}/resque_work_1.pid ]"
+              pids = capture("ls -1 #{fetch(:resque_pid_path)}/resque_work*.pid").lines.map(&:chomp)
+              pids.each do |pid_file|
+                pid = capture("cat #{pid_file}")
+                if run_and_rescue "#{maybe_sudo} kill -0 #{pid}"
+                  run("#{maybe_sudo} kill -s #{fetch(:resque_kill_signal)} #{pid} && #{maybe_sudo} rm #{pid_file}")
+                else
+                  puts "Process #{pid} from #{pid_file} is not running, cleaning up stale PID file"
+                  run("#{maybe_sudo} rm #{pid_file}")
+                end
+              end
+            else
+              puts "No resque PID files found"
+            end
           end
 
           desc "Restart running Resque workers"
