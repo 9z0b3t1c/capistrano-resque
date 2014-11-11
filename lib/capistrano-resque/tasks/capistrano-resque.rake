@@ -144,6 +144,7 @@ namespace :resque do
       end
     end
 
+    desc "Restart resque scheduler"
     task :restart do
       invoke "resque:scheduler:stop"
       invoke "resque:scheduler:start"
