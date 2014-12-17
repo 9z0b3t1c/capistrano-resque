@@ -55,6 +55,14 @@ The above will start five workers in total:
  * one listening on the `search_index, cache_warming` queue
  * three listening on the `mailing` queue
 
+If you need to pass arbitrary data (like other non-standard environment variables) to the "start" command, you can specify:
+
+```ruby
+set :extra_env, "SEARCH_SERVER=172.18.0.52"
+```
+
+This can be useful for customizing Resque tasks in complex server environments.
+
 ### Multiple Servers/Roles
 
 You can also start up workers on multiple servers/roles:
