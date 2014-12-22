@@ -128,7 +128,7 @@ namespace :resque do
         create_pid_path
         pid = "#{fetch(:resque_pid_path)}/scheduler.pid"
         within current_path do
-          execute :rake, %{RAILS_ENV=#{rails_env} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 #{"environment" if fetch(:resque_environment_task)} resque:scheduler #{output_redirection}}
+          execute :nohup, %{#{SSHKit.config.command_map[:rake]} RAILS_ENV=#{rails_env} PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 #{"environment" if fetch(:resque_environment_task)} resque:scheduler #{output_redirection}}
         end
       end
     end

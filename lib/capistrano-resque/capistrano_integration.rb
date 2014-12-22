@@ -73,7 +73,7 @@ module CapistranoResque
         end
 
         def start_scheduler(pid)
-          "cd #{current_path} && RAILS_ENV=#{rails_env} \
+          "cd #{current_path} && nohup RAILS_ENV=#{rails_env} \
            PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
            #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment" if fetch(:resque_environment_task)} \
