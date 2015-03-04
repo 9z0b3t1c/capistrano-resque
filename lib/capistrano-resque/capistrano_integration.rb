@@ -49,7 +49,7 @@ module CapistranoResque
            PIDFILE=#{pid} BACKGROUND=yes \
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
            INTERVAL=#{interval} \
-           #{fetch(:bundle_cmd, "bundle")} exec rake \
+           nohup #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment " if fetch(:resque_environment_task)}\
            resque:work #{output_redirection}"
         end
@@ -80,7 +80,7 @@ module CapistranoResque
            PIDFILE=#{pid} BACKGROUND=yes \
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
            MUTE=1 \
-           #{fetch(:bundle_cmd, "bundle")} exec rake \
+           nohup #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment " if fetch(:resque_environment_task)}\
            resque:scheduler #{output_redirection}"
         end
