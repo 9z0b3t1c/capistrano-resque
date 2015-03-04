@@ -8,7 +8,7 @@ At this time, we are only targeting Resque 1.x; the 2.0/master branch is still a
 ### In your Gemfile:
 
 ```ruby
-gem "capistrano-resque", "~> 0.2.1", require: false
+gem "capistrano-resque", "~> 0.2.2", require: false
 ```
 
 ### In lib/tasks:
