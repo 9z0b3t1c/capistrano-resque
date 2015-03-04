@@ -151,6 +151,12 @@ If you'd like to capture this output instead, just specify a log file:
 set :resque_log_file, "log/resque.log"
 ```
 
+You can also disable the `VERBOSE` option to reduce the amount of log output:
+
+```ruby
+set :resque_verbose, false
+```
+
 ### Limitations
 
 Starting workers is done concurrently via Capistrano and you are limited by ssh connections limit on your server (default limit is 10)
