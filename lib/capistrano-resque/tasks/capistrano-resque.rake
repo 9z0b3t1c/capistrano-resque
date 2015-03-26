@@ -8,6 +8,7 @@ namespace :load do
     set :resque_verbose, true
     set :resque_pid_path, -> { File.join(shared_path, 'tmp', 'pids') }
     set :resque_dynamic_schedule, false
+    set :term_child, false # http://hone.herokuapp.com/resque/2012/08/21/resque-signals.html
   end
 end
 
@@ -70,7 +71,7 @@ namespace :resque do
           number_of_workers.times do
             pid = "#{fetch(:resque_pid_path)}/resque_work_#{worker_id}.pid"
             within current_path do
-              execute :nohup, %{#{SSHKit.config.command_map[:rake]} RAILS_ENV=#{rails_env} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes #{"VERBOSE=1 " if fetch(:resque_verbose)}INTERVAL=#{fetch(:interval)} #{"environment " if fetch(:resque_environment_task)}resque:work #{output_redirection}}
+                            execute :nohup, %{#{SSHKit.config.command_map[:rake]} RAILS_ENV=#{rails_env} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes #{"TERM_CHILD=1 " if fetch(:term_child)} #{"VERBOSE=1 " if fetch(:resque_verbose)}INTERVAL=#{fetch(:interval)} #{"environment " if fetch(:resque_environment_task)}resque:work #{output_redirection}}
             end
             worker_id += 1
           end
