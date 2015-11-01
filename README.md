@@ -63,7 +63,16 @@ The above will start five workers in total:
  * one listening on the `search_index, cache_warming` queue
  * three listening on the `mailing` queue
 
-### Multiple Servers/Roles
+From: https://github.com/dhanson358/capistrano-resque/commit/41c31eec72c940378dcbfa2c66660072f2b8fc90
+If you need to pass arbitrary data (like other non-standard environment variables) to the "start" command, you can specify:
+
+```ruby
+set :extra_env, "SEARCH_SERVER=172.18.0.52"
+```
+
+This can be useful for customizing Resque tasks in complex server environments.
+
+### Multiple Servers/roles
 
 You can also start up workers on multiple servers/roles:
 
