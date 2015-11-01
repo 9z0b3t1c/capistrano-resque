@@ -1,7 +1,7 @@
 namespace :load do
   task :defaults do
     set :workers, {"*" => 1}
-    set :extra_env, ""
+    set :resque_extra_env, ""
     set :resque_kill_signal, "QUIT"
     set :interval, "5"
     set :resque_environment_task, false
@@ -71,7 +71,7 @@ namespace :resque do
           number_of_workers.times do
             pid = "#{fetch(:resque_pid_path)}/resque_work_#{worker_id}.pid"
             within current_path do
-              execute %{cd #{release_path} && #{SSHKit.config.command_map[:rake]} #{fetch(:extra_env)} RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes #{"VERBOSE=1 " if fetch(:resque_verbose)}INTERVAL=#{fetch(:interval)} #{"environment " if fetch(:resque_environment_task)}resque:work #{output_redirection}}
+              execute %{cd #{release_path} && #{SSHKit.config.command_map[:rake]} #{fetch(:resque_extra_env)} RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes #{"VERBOSE=1 " if fetch(:resque_verbose)}INTERVAL=#{fetch(:interval)} #{"environment " if fetch(:resque_environment_task)}resque:work #{output_redirection}}
             end
             worker_id += 1
           end

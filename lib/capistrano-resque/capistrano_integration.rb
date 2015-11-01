@@ -9,7 +9,7 @@ module CapistranoResque
         _cset(:workers, {"*" => 1})
         _cset(:resque_kill_signal, "QUIT")
         _cset(:interval, "5")
-        _cset(:extra_env, "")
+        _cset(:resque_extra_env, "")
         _cset(:resque_environment_task, false)
         _cset(:resque_log_file, "/dev/null")
         _cset(:resque_verbose, true)
@@ -50,7 +50,7 @@ module CapistranoResque
           "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
            PIDFILE=#{pid} BACKGROUND=yes\
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
-           INTERVAL=#{interval} #{extra_env}\
+           INTERVAL=#{interval} #{resque_extra_env}\
            #{fetch(:nohup_cmd, "")} #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment " if fetch(:resque_environment_task)}\
            resque:work #{output_redirection}"

@@ -67,7 +67,7 @@ From: https://github.com/dhanson358/capistrano-resque/commit/41c31eec72c940378dc
 If you need to pass arbitrary data (like other non-standard environment variables) to the "start" command, you can specify:
 
 ```ruby
-set :extra_env, "SEARCH_SERVER=172.18.0.52"
+set :resque_extra_env, "DYNAMIC_SCHEDULE=true"
 ```
 
 This can be useful for customizing Resque tasks in complex server environments.
