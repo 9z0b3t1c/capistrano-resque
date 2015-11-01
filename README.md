@@ -63,13 +63,6 @@ The above will start five workers in total:
  * one listening on the `search_index, cache_warming` queue
  * three listening on the `mailing` queue
 
-From: https://github.com/dhanson358/capistrano-resque/commit/41c31eec72c940378dcbfa2c66660072f2b8fc90
-If you need to pass arbitrary data (like other non-standard environment variables) to the "start" command, you can specify:
-
-```ruby
-set :resque_extra_env, "DYNAMIC_SCHEDULE=true"
-```
-
 This can be useful for customizing Resque tasks in complex server environments.
 
 ### Multiple Servers/roles
@@ -97,6 +90,19 @@ The above will start four workers in total:
  * one `mailing` on Server A
  * one `search_index` on Server B
  * one `search_index` on Server C
+
+### Env Dynamic Schedule
+To set env variable `DYNAMIC_SCHEDULE when` start scheduler use:
+
+```ruby
+set :resque_dynamic_schedule, true
+```
+
+When set this env, the command to start scheduler would
+
+```bash
+DYNAMIC_SCHEDULE=true bundle exec rake resque:scheduler
+```
 
 ### Rails Environment
 
