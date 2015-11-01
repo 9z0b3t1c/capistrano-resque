@@ -12,7 +12,9 @@ module CapistranoResque
         _cset(:interval, "5")
         _cset(:resque_environment_task, false)
         _cset(:resque_log_file, "/dev/null")
+        _cset(:resque_verbose, true)
         _cset(:resque_pid_path) { File.join(shared_path, 'tmp', 'pids') }
+        _cset(:resque_dynamic_schedule, false)
 
         def rails_env
           fetch(:resque_rails_env, fetch(:rails_env, "production"))
@@ -45,10 +47,12 @@ module CapistranoResque
         end
 
         def start_command(queue, pid)
-          "cd #{current_path} && RAILS_ENV=#{rails_env} QUEUE=\"#{queue}\" \
-           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 INTERVAL=#{interval} #{extra_env}\
-           #{fetch(:bundle_cmd, "bundle")} exec rake \
-           #{"environment" if fetch(:resque_environment_task)} \
+          "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{extra_env} QUEUE=\"#{queue}\" \
+           PIDFILE=#{pid} BACKGROUND=yes \
+           #{"VERBOSE=1 " if fetch(:resque_verbose)}\
+           INTERVAL=#{interval} \
+           nohup #{fetch(:bundle_cmd, "bundle")} exec rake \
+           #{"environment " if fetch(:resque_environment_task)}\
            resque:work #{output_redirection}"
         end
 
@@ -74,10 +78,13 @@ module CapistranoResque
         end
 
         def start_scheduler(pid)
-          "cd #{current_path} && RAILS_ENV=#{rails_env} \
-           PIDFILE=#{pid} BACKGROUND=yes VERBOSE=1 MUTE=1 \
-           #{fetch(:bundle_cmd, "bundle")} exec rake \
-           #{"environment" if fetch(:resque_environment_task)} \
+          "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} \
+           PIDFILE=#{pid} BACKGROUND=yes \
+           #{"VERBOSE=1 " if fetch(:resque_verbose)}\
+           MUTE=1 \
+           #{"DYNAMIC_SCHEDULE=yes " if fetch(:resque_dynamic_schedule)}\
+           nohup #{fetch(:bundle_cmd, "bundle")} exec rake \
+           #{"environment " if fetch(:resque_environment_task)}\
            resque:scheduler #{output_redirection}"
         end
 

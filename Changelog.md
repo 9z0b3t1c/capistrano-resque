@@ -1,3 +1,7 @@
+# 0.2.2
+* Start all background tasks with `nohup` to avoid `SIGHUP` problems
+* Add a `:resque_verbose` option to toggle verbose output (defaults to `true`)
+
 # 0.2.1
 * Create the directory for pid files when it doesn't exist
 * Default pid files to `#{shared_path}/tmp/pids` now

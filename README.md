@@ -3,11 +3,19 @@
 Basic tasks for putting some Resque in your Cap. This should be fully compatible with both Capistrano 2.x and 3.x,
 but if you run into any issues please report them.
 
+At this time, we are only targeting Resque 1.x; the 2.0/master branch is still a work-in-progress without a published gem.
+
 ### In your Gemfile:
 
 ```ruby
-gem "capistrano-resque", "~> 0.2.1", require: false
+gem "capistrano-resque", "~> 0.2.2", require: false
 ```
+
+### In lib/tasks:
+
+You'll need to make sure your app is set to include Resque's rake tasks. Per the
+[Resque 1.x README](https://github.com/resque/resque/blob/1-x-stable/README.markdown#in-a-rails-3-app-as-a-gem),
+you'll need to add `require 'resque/tasks'` somewhere under the `lib/tasks` directory (e.g. in a `lib/tasks/resque.rake` file).
 
 ### In your Capfile:
 
@@ -157,6 +165,12 @@ If you'd like to capture this output instead, just specify a log file:
 
 ```ruby
 set :resque_log_file, "log/resque.log"
+```
+
+You can also disable the `VERBOSE` option to reduce the amount of log output:
+
+```ruby
+set :resque_verbose, false
 ```
 
 ### Limitations
