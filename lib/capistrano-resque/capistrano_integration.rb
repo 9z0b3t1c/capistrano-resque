@@ -15,6 +15,7 @@ module CapistranoResque
         _cset(:resque_verbose, true)
         _cset(:resque_pid_path) { File.join(shared_path, 'tmp', 'pids') }
         _cset(:resque_dynamic_schedule, false)
+        _cset(:nohup_cmd, "nohup")
 
         def rails_env
           fetch(:resque_rails_env, fetch(:rails_env, "production"))
@@ -51,7 +52,7 @@ module CapistranoResque
            PIDFILE=#{pid} BACKGROUND=yes \
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
            INTERVAL=#{interval} \
-           nohup #{fetch(:bundle_cmd, "bundle")} exec rake \
+           #{fetch(:nohup_cmd)} #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment " if fetch(:resque_environment_task)}\
            resque:work #{output_redirection}"
         end
@@ -83,7 +84,7 @@ module CapistranoResque
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
            MUTE=1 \
            #{"DYNAMIC_SCHEDULE=yes " if fetch(:resque_dynamic_schedule)}\
-           nohup #{fetch(:bundle_cmd, "bundle")} exec rake \
+           #{fetch(:nohup_cmd)} #{fetch(:bundle_cmd, "bundle")} exec rake \
            #{"environment " if fetch(:resque_environment_task)}\
            resque:scheduler #{output_redirection}"
         end
