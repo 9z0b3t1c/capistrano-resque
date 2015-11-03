@@ -7,7 +7,7 @@ module CapistranoResque
       capistrano_config.load do
 
         _cset(:workers, {"*" => 1})
-        _cset(:extra_env, "")
+        _cset(:resque_extra_env, "")
         _cset(:resque_kill_signal, "QUIT")
         _cset(:interval, "5")
         _cset(:resque_environment_task, false)
@@ -47,7 +47,7 @@ module CapistranoResque
         end
 
         def start_command(queue, pid)
-          "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{extra_env} QUEUE=\"#{queue}\" \
+          "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{resque_extra_env} QUEUE=\"#{queue}\" \
            PIDFILE=#{pid} BACKGROUND=yes \
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
            INTERVAL=#{interval} \

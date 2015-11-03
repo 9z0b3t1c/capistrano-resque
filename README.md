@@ -66,7 +66,7 @@ The above will start five workers in total:
 If you need to pass arbitrary data (like other non-standard environment variables) to the "start" command, you can specify:
 
 ```ruby
-set :extra_env, "SEARCH_SERVER=172.18.0.52"
+set :resque_extra_env, "SEARCH_SERVER=172.18.0.52"
 ```
 
 This can be useful for customizing Resque tasks in complex server environments.
