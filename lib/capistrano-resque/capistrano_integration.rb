@@ -78,7 +78,7 @@ module CapistranoResque
         end
 
         def start_scheduler(pid)
-          "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} \
+          "cd #{current_path} && RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{resque_extra_env} \
            PIDFILE=#{pid} BACKGROUND=yes \
            #{"VERBOSE=1 " if fetch(:resque_verbose)}\
            MUTE=1 \
