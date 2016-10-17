@@ -1,3 +1,6 @@
+# 0.2.3 and newer
+* Please see the [Github Releases](https://github.com/sshingler/capistrano-resque/releases) page for changelog info
+
 # 0.2.2
 * Start all background tasks with `nohup` to avoid `SIGHUP` problems
 * Add a `:resque_verbose` option to toggle verbose output (defaults to `true`)
