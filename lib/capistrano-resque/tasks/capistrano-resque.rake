@@ -19,6 +19,10 @@ namespace :resque do
       fetch(:stage)              # so we need to fall back to the stage.
   end
 
+  def rake_cmd(cmd, pid, specifics)
+    %{#{SSHKit.config.command_map[:rake]} RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{fetch(:resque_extra_env)} PIDFILE=#{pid} BACKGROUND=yes#{" VERBOSE=1" if fetch(:resque_verbose)} #{specifics} #{"environment " if fetch(:resque_environment_task)}resque:#{cmd} #{output_redirection}#{" &" if fetch(:resque_fire_and_forget)}}
+  end
+
   def output_redirection
     ">> #{fetch(:resque_log_file)} 2>> #{fetch(:resque_log_file)}"
   end
@@ -61,7 +65,6 @@ namespace :resque do
 
   desc "Start Resque workers"
   task :start do
-
     for_each_workers do |role, workers|
       on roles(role) do
         create_pid_path
@@ -71,7 +74,7 @@ namespace :resque do
           number_of_workers.times do
             pid = "#{fetch(:resque_pid_path)}/resque_work_#{worker_id}.pid"
             within current_path do
-              execute :nohup, %{#{SSHKit.config.command_map[:rake]} RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{fetch(:resque_extra_env)} QUEUE="#{queue}" PIDFILE=#{pid} BACKGROUND=yes #{"VERBOSE=1 " if fetch(:resque_verbose)}INTERVAL=#{fetch(:interval)} #{"environment " if fetch(:resque_environment_task)}resque:work #{output_redirection}}
+              execute :nohup, rake_cmd(:work, pid, %{QUEUE="#{queue}" INTERVAL=#{fetch(:interval)}})
             end
             worker_id += 1
           end
@@ -131,7 +134,7 @@ namespace :resque do
         create_pid_path
         pid = "#{fetch(:resque_pid_path)}/scheduler.pid"
         within current_path do
-          execute :nohup, %{#{SSHKit.config.command_map[:rake]} RACK_ENV=#{rails_env} RAILS_ENV=#{rails_env} #{fetch(:resque_extra_env)} PIDFILE=#{pid} BACKGROUND=yes #{"VERBOSE=1 " if fetch(:resque_verbose)}MUTE=1 #{"DYNAMIC_SCHEDULE=yes " if fetch(:resque_dynamic_schedule)}#{"environment " if fetch(:resque_environment_task)}resque:scheduler #{output_redirection}}
+          execute :nohup, rake_cmd(:scheduler, pid, "MUTE=1#{" DYNAMIC_SCHEDULE=yes" if fetch(:resque_dynamic_schedule)}")
         end
       end
     end

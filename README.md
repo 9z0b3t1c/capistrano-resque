@@ -173,6 +173,18 @@ You can also disable the `VERBOSE` option to reduce the amount of log output:
 set :resque_verbose, false
 ```
 
+### Fire-and-forget
+Where a large number of workers needs to be started on a single host, it can be a long wait for each one to start before
+moving onto the next.
+```ruby
+set :resque_fire_and_forget, true
+```
+The above will background the rake command which starts the workers and scheduler.
+
+This does have the disadvantage of ignoring any errors that might occur when executing rake, so this should only be
+enabled if the benefits outweigh that cost. It may also spike the load on the host as it tries to concurrently start as
+many processes as it can.
+
 ### Limitations
 
 Starting workers is done concurrently via Capistrano and you are limited by ssh connections limit on your server (default limit is 10)
